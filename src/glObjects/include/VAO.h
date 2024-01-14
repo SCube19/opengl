@@ -10,6 +10,7 @@
 
 namespace Real
 {
+
 class VAO : public GLObject
 {
 private:
@@ -20,14 +21,32 @@ private:
     std::unique_ptr<EBO> ebo;
 
 public:
+    struct Config
+    {
+        GLuint layout;
+        GLuint numberOfComponents;
+        GLenum type;
+        GLsizeiptr stride;
+        void* offset;
+    };
+
     VAO();
     ~VAO();
 
     void bind();
     void unbind();
 
-    void linkVBO(std::unique_ptr<VBO>&& vbo, GLuint layout);
+    void linkVBO(std::unique_ptr<VBO>&& vbo, const Config& config);
     void linkEBO(std::unique_ptr<EBO>&& ebo);
-    void fromVectors(const std::vector<GLfloat>& vertices, const std::vector<GLuint>& indices);
+    void linkAttrib(const Config& config);
+
+    void fromVectors(
+        const std::vector<GLfloat>& vertices,
+        const std::vector<GLuint>& indices,
+        const Config& config,
+        int drawType = GL_STATIC_DRAW);
+
+    VBO& getVBO();
+    EBO& getEBO();
 };
 }

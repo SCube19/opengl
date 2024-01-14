@@ -36,31 +36,56 @@ void VAO::unbind()
         ebo->unbind();
 }
 
-void VAO::linkVBO(std::unique_ptr<VBO>&& vbo, GLuint layout)
+void VAO::linkVBO(std::unique_ptr<VBO>&& vbo, const Config& config)
 {
-    this->bind();
+    bind();
 
     this->vbo = std::move(vbo);
 
     this->vbo->bind();
-    glVertexAttribPointer(layout, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(layout);
+    glVertexAttribPointer(
+        config.layout,
+        config.numberOfComponents,
+        config.type,
+        GL_FALSE,
+        config.stride,
+        config.offset);
+    glEnableVertexAttribArray(config.layout);
 
-    this->unbind();
+    unbind();
 }
 
 void VAO::linkEBO(std::unique_ptr<EBO>&& ebo)
 {
-    this->ebo = std::move(ebo);
+    ebo = std::move(ebo);
 }
 
-void VAO::fromVectors(const std::vector<GLfloat>& vertices, const std::vector<GLuint>& indices)
+void VAO::linkAttrib(const Config& config)
 {
-    this->bind();
-    std::unique_ptr<VBO> vbo = std::make_unique<VBO>(vertices, GL_STATIC_DRAW);
-    std::unique_ptr<EBO> ebo = std::make_unique<EBO>(indices, GL_STATIC_DRAW);
+    linkVBO(std::move(vbo), config);
+}
 
-    this->linkVBO(std::move(vbo), 0);
-    this->linkEBO(std::move(ebo));
+void VAO::fromVectors(
+    const std::vector<GLfloat>& vertices,
+    const std::vector<GLuint>& indices,
+    const Config& config,
+    int drawType)
+{
+    bind();
+    std::unique_ptr<VBO> vbo = std::make_unique<VBO>(vertices, drawType);
+    std::unique_ptr<EBO> ebo = std::make_unique<EBO>(indices, drawType);
+
+    linkVBO(std::move(vbo), config);
+    linkEBO(std::move(ebo));
+}
+
+VBO& VAO::getVBO()
+{
+    return *vbo;
+}
+
+EBO& VAO::getEBO()
+{
+    return *ebo;
 }
 }

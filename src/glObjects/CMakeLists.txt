@@ -5,6 +5,7 @@ SET(SRC_FILES
     src/VBO.cpp
     src/VAO.cpp
     src/EBO.cpp
+    src/window.cpp
     include/glObject.h
     )
 
