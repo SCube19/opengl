@@ -16,5 +16,10 @@ public:
     ~Shader();
 
     void use();
+
+    GLuint getProgram();
+
+    template<typename T>
+    void setUniform(const std::string& uniformName, T value);
 };
 }

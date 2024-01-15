@@ -91,4 +91,30 @@ void Shader::use()
 {
     glUseProgram(shaderProgram);
 }
+
+GLuint Shader::getProgram()
+{
+    return shaderProgram;
+}
+
+template<>
+void Shader::setUniform(const std::string& uniformName, GLfloat value)
+{
+    GLuint uniform = glGetUniformLocation(shaderProgram, uniformName.c_str());
+    glUniform1f(uniform, value);
+}
+
+template<>
+void Shader::setUniform(const std::string& uniformName, GLint value)
+{
+    GLuint uniform = glGetUniformLocation(shaderProgram, uniformName.c_str());
+    glUniform1i(uniform, value);
+}
+
+template<>
+void Shader::setUniform(const std::string& uniformName, GLuint value)
+{
+    GLuint uniform = glGetUniformLocation(shaderProgram, uniformName.c_str());
+    glUniform1ui(uniform, value);
+}
 }

@@ -61,6 +61,8 @@ int main()
 
             shader.use();
 
+            shader.setUniform<GLfloat>("scale", 1.5f);
+
             vao.bind();
 
             glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
