@@ -20,20 +20,15 @@ add_subdirectory(src/glObjects)
 
 add_executable(real_engine src/main.cpp)
 
-target_link_libraries(real_engine glad glfw glObjects)
+target_link_libraries(real_engine glad stb glfw glObjects)
 
-configure_file(src/shaders/default.vert shaders/default.vert COPYONLY)
-configure_file(src/shaders/default.frag shaders/default.frag COPYONLY)
+configure_file(shaders/default.vert shaders/default.vert COPYONLY)
+configure_file(shaders/default.frag shaders/default.frag COPYONLY)
+file(COPY textures DESTINATION .)
+
 
 find_package(OpenGL REQUIRED)
 
-# include_directories(include)
-
-# file(GLOB SOURCES "src/*.cpp" "src/*.c")
-
-# add_executable(opengl ${SOURCES})
-
-# target_link_libraries(opengl glfw)
 
 
 

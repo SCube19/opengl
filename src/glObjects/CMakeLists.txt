@@ -6,11 +6,11 @@ SET(SRC_FILES
     src/VAO.cpp
     src/EBO.cpp
     src/window.cpp
+    src/texture.cpp
     include/glObject.h
     )
 
-#for static libraries
 add_library(glObjects STATIC ${SRC_FILES})
 
 target_include_directories(glObjects PUBLIC ${PROJECT_SOURCE_DIR}/include include)
-
+target_link_libraries(glObjects PUBLIC stb)
