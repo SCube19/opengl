@@ -37,7 +37,6 @@ public:
         this->translate(position);
         this->updateModelUniform();
         this->updatePositionUniform();
-
     }
 
     glm::vec3 getPosition();

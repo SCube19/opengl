@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <string>
+#include <optional>
 #include "stb/stb_image.h"
 
 #include "glObject.h"
@@ -15,17 +16,18 @@ class Texture : public GLObject
 private:
     GLuint id;
     GLenum type;
-    GLenum slot;
+    GLuint slot;
 
 public:
     Texture(
         const std::string& image,
         GLenum texType,
-        GLenum slot,
+        GLuint slot,
         GLenum format,
         GLenum pixelType);
 
     ~Texture();
+
 
     void bind();
     void unbind();

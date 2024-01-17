@@ -14,7 +14,10 @@ in vec3 Normal;
 in vec3 crntPos;
 
 // Gets the Texture Unit from the main function
-uniform sampler2D tex0;
+uniform sampler2D real_texture;
+
+uniform sampler2D real_specular;
+
 // Gets the color of the light from the main function
 uniform vec4 lightColor;
 // Gets the position of the light from the main function
@@ -35,9 +38,9 @@ void main()
 	float specularStrength = 0.5f;
 	vec3 viewDirection = normalize(real_cameraPosition - crntPos);
 	vec3 reflection = reflect(-lightDirection, normal);
-	float specularAmount = pow(max(dot(viewDirection, reflection), 0.0f), 4);
+	float specularAmount = pow(max(dot(viewDirection, reflection), 0.0f), 16);
 	float specular = specularStrength * specularAmount;
 
 	// outputs final color
-	FragColor = texture(tex0, texCoord) * lightColor * (ambient + diffuse + specular);
+	FragColor = texture(real_texture, texCoord) * lightColor * (ambient + diffuse) + texture(real_specular, texCoord).r * specular;
 }

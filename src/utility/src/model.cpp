@@ -7,15 +7,15 @@
 
 namespace Real
 {
-void Model::updateTextureUniform()
+void Model::updateTexturesUniform()
 {
-    this->texture.bindShader(this->shader, this->textureUniform);
+    this->textures.bindShader(this->shader);
 }
 
-void Model::setTexture(const Texture& texture)
+void Model::setTextureSet(TextureSet& textures)
 {
-    this->texture = texture;
-    this->updateTextureUniform();
+    this->textures = std::move(textures);
+    this->updateTexturesUniform();
 }
 
 void Model::applyLight(Light& light, const std::string& positionUniform, const std::string& colorUniform)
@@ -34,7 +34,7 @@ void Model::draw()
     glm::vec3 camPos = Real::Camera::getInstace().getPosition();
     shader.setUniform(Uniform::CAMERA_POSITION, camPos.x, camPos.y, camPos.z);
 
-    texture.bind();
+    textures.bind();
     vao.draw();
 }
 }

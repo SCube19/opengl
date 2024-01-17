@@ -8,6 +8,7 @@ SET(SRC_FILES
     src/window.cpp
     src/texture.cpp
     src/camera.cpp
+    src/textureSet.cpp
     include/glObject.h
     )
 

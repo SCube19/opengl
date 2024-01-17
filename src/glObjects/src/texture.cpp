@@ -1,10 +1,14 @@
 #include "texture.h"
 
 
-
 namespace Real
 {
-Texture::Texture(const std::string& image, GLenum texType, GLenum slot, GLenum format, GLenum pixelType)
+Texture::Texture(
+    const std::string& image,
+    GLenum texType,
+    GLuint slot,
+    GLenum format,
+    GLenum pixelType)
 {
     stbi_set_flip_vertically_on_load(true);
 
@@ -15,7 +19,7 @@ Texture::Texture(const std::string& image, GLenum texType, GLenum slot, GLenum f
     unsigned char* bytes = stbi_load(image.c_str(), &w, &h, &ch, 0);
 
     glGenTextures(1, &id);
-    glActiveTexture(slot);
+    glActiveTexture(GL_TEXTURE0 + slot);
     glBindTexture(texType, id);
 
     glTexParameteri(texType, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
@@ -39,6 +43,7 @@ Texture::~Texture()
 
 void Texture::bind()
 {
+    glActiveTexture(GL_TEXTURE0 + this->slot);
     glBindTexture(type, id);
 }
 
@@ -49,6 +54,6 @@ void Texture::unbind()
 
 void Texture::bindShader(Shader& shader, const std::string& uniformName)
 {
-    shader.setUniform<GLint>(uniformName, static_cast<GLuint>(this->slot - GL_TEXTURE0));
+    shader.setUniform<GLint>(uniformName, this->slot);
 }
 }

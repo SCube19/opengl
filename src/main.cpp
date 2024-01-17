@@ -10,7 +10,7 @@
 #include <filesystem>
 #include <random>
 #include <chrono>
-
+#include <optional>
 
 #include "VAO.h"
 #include "VBO.h"
@@ -21,6 +21,7 @@
 #include "camera.h"
 #include "model.h"
 #include "light.h"
+#include "textureSet.h"
 
 // Vertices coordinates
 std::vector<GLfloat> vertices =
@@ -144,9 +145,10 @@ int main()
         vao.linkAttrib({
             3, 3, GL_FLOAT, 11 * sizeof(float), (void*)(8 * sizeof(float))
             });
-        Real::Texture popcat(std::filesystem::absolute("textures/popcat.png"), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+        std::unique_ptr<Real::Texture> popcat = std::make_unique<Real::Texture>(std::filesystem::absolute("textures/planks.png"), GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE);
+        std::unique_ptr<Real::Texture> specular = std::make_unique<Real::Texture>(std::filesystem::absolute("textures/planksSpec.png"), GL_TEXTURE_2D, 1, GL_RED, GL_UNSIGNED_BYTE);
 
-
+        Real::TextureSet textures(std::move(popcat), std::move(specular));
 
         Real::Light light(
             glm::vec3(0.5f, 0.5f, 0.5f),
@@ -155,8 +157,7 @@ int main()
             glm::vec4(1.0f)
         );
 
-
-        Real::Model pyramid(glm::vec3(0.0f, 0.0f, 0.0f), vao, shader, popcat, "tex0");
+        Real::Model pyramid(glm::vec3(0.0f, 0.0f, 0.0f), vao, shader, textures);
 
         pyramid.applyLight(light, "lightPos", "lightColor");
 
