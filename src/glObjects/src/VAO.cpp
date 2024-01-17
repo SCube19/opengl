@@ -95,4 +95,10 @@ int VAO::getNumberOfVertices()
     return nVertices;
 }
 
+void VAO::draw()
+{
+    bind();
+    glDrawElements(GL_TRIANGLES, getNumberOfVertices(), GL_UNSIGNED_INT, 0);
+}
+
 }

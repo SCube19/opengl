@@ -1,6 +1,5 @@
 #include "camera.h"
 
-#include <iostream>
 namespace Real
 {
 Camera& Camera::getInstace()
@@ -115,10 +114,8 @@ void Camera::handleInput(Window& window)
         glm::vec3 newOrientation = glm::rotate(orientation, glm::radians(-rotX), glm::normalize(glm::cross(orientation, up)));
 
         if (std::abs(glm::angle(newOrientation, up) - glm::radians(90.0f)) <= glm::radians(85.0f))
-        {
-            std::cout << "Allowed";
             orientation = newOrientation;
-        }
+
 
         orientation = glm::rotate(orientation, glm::radians(-rotY), up);
 

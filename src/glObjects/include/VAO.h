@@ -53,5 +53,6 @@ public:
 
     int getNumberOfVertices();
 
+    void draw();
 };
 }

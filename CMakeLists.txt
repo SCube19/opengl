@@ -22,8 +22,7 @@ add_executable(real_engine src/main.cpp)
 
 target_link_libraries(real_engine glad stb glfw glObjects)
 
-configure_file(shaders/default.vert shaders/default.vert COPYONLY)
-configure_file(shaders/default.frag shaders/default.frag COPYONLY)
+file(COPY shaders DESTINATION .)
 file(COPY textures DESTINATION .)
 
 

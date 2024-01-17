@@ -19,25 +19,67 @@
 // Vertices coordinates
 std::vector<GLfloat> vertices =
 {
-    //COORDS                //COLORS            //TEXTURES
-    -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
-    -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	5.0f, 0.0f,
-     0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
-     0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	5.0f, 0.0f,
-     0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	2.5f, 5.0f
+    -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,      0.0f, -1.0f, 0.0f, // Bottom side
+    -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 5.0f,      0.0f, -1.0f, 0.0f, // Bottom side
+     0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 5.0f,      0.0f, -1.0f, 0.0f, // Bottom side
+     0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, -1.0f, 0.0f, // Bottom side
+
+    -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,     -0.8f, 0.5f,  0.0f, // Left Side
+    -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,     -0.8f, 0.5f,  0.0f, // Left Side
+     0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,     -0.8f, 0.5f,  0.0f, // Left Side
+
+    -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, 0.5f, -0.8f, // Non-facing side
+     0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      0.0f, 0.5f, -0.8f, // Non-facing side
+     0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, 0.5f, -0.8f, // Non-facing side
+
+     0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      0.8f, 0.5f,  0.0f, // Right side
+     0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.8f, 0.5f,  0.0f, // Right side
+     0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.8f, 0.5f,  0.0f, // Right side
+
+     0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, 0.5f,  0.8f, // Facing side
+    -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,      0.0f, 0.5f,  0.8f, // Facing side
+     0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, 0.5f,  0.8f  // Facing side
 };
 
 // Indices for vertices order
 std::vector<GLuint> indices =
 {
-    0, 1, 2,
-    0, 2, 3,
-    0, 1, 4,
-    1, 2, 4,
-    2, 3, 4,
-    3, 0, 4
+    0, 1, 2, // Bottom side
+    0, 2, 3, // Bottom side
+    4, 6, 5, // Left side
+    7, 9, 8, // Non-facing side
+    10, 12, 11, // Right side
+    13, 15, 14 // Facing side
 };
 
+
+using model_3d = std::pair<std::vector<GLfloat>, std::vector<GLuint>>;
+
+model_3d cube = {
+    {
+        -0.1f, -0.1f,  0.1f,
+    -0.1f, -0.1f, -0.1f,
+     0.1f, -0.1f, -0.1f,
+     0.1f, -0.1f,  0.1f,
+    -0.1f,  0.1f,  0.1f,
+    -0.1f,  0.1f, -0.1f,
+     0.1f,  0.1f, -0.1f,
+     0.1f,  0.1f,  0.1f
+},
+{	0, 1, 2,
+    0, 2, 3,
+    0, 4, 7,
+    0, 7, 3,
+    3, 7, 6,
+    3, 6, 2,
+    2, 6, 5,
+    2, 5, 1,
+    1, 5, 4,
+    1, 4, 0,
+    4, 5, 6,
+    4, 6, 7}
+
+};
 
 int main()
 {
@@ -57,19 +99,48 @@ int main()
             std::filesystem::absolute("shaders/default.vert"),
             std::filesystem::absolute("shaders/default.frag"));
 
+        Real::Shader lightShader(
+            std::filesystem::absolute("shaders/light.vert"),
+            std::filesystem::absolute("shaders/light.frag")
+        );
+
         Real::VAO vao;
+        Real::VAO cubevao;
+
         vao.fromVectors(vertices, indices, {
-            0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0
+            0, 3, GL_FLOAT, 11 * sizeof(float), (void*)0
             });
-        vao.linkAttrib({
-            1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float))
-            });
-        vao.linkAttrib({
-            2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float))
+        cubevao.fromVectors(cube.first, cube.second, {
+            0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0
             });
 
+        vao.linkAttrib({
+            1, 3, GL_FLOAT, 11 * sizeof(float), (void*)(3 * sizeof(float))
+            });
+        vao.linkAttrib({
+            2, 2, GL_FLOAT, 11 * sizeof(float), (void*)(6 * sizeof(float))
+            });
+        vao.linkAttrib({
+            3, 3, GL_FLOAT, 11 * sizeof(float), (void*)(8 * sizeof(float))
+            });
         Real::Texture popcat(std::filesystem::absolute("textures/brick.jpg"), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
         popcat.bindShader(shader, "tex0");
+
+        glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+        glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
+        glm::mat4 lightModel = glm::mat4(1.0f);
+        lightModel = glm::translate(lightModel, lightPos);
+
+        glm::vec3 pyramidPos = glm::vec3(0.0f, 0.0f, 0.0f);
+        glm::mat4 pyramidModel = glm::mat4(1.0f);
+        pyramidModel = glm::translate(pyramidModel, pyramidPos);
+
+        lightShader.setUniformMatrix(glUniformMatrix4fv, "model", 1, GL_FALSE, glm::value_ptr(lightModel));
+        shader.setUniformMatrix(glUniformMatrix4fv, "model", 1, GL_FALSE, glm::value_ptr(pyramidModel));
+
+        lightShader.setUniform("lightColor", lightColor.x, lightColor.y, lightColor.z, lightColor.w);
+        shader.setUniform("lightColor", lightColor.x, lightColor.y, lightColor.z, lightColor.w);
+        shader.setUniform("lightPos", lightPos.x, lightPos.y, lightPos.z);
 
         // Main while loop
         while (!glfwWindowShouldClose(&window))
@@ -80,18 +151,21 @@ int main()
 
             shader.use();
 
-            Real::Camera::getInstace().handleInput(window);
             Real::Camera::getInstace().project(shader, "camera");
 
             popcat.bind();
 
-            vao.bind();
+            vao.draw();
 
-            glDrawElements(GL_TRIANGLES, vao.getNumberOfVertices(), GL_UNSIGNED_INT, 0);
+            lightShader.use();
+            Real::Camera::getInstace().project(lightShader, "camera");
+            cubevao.draw();
 
             glfwSwapBuffers(&window);
 
             glfwPollEvents();
+
+            Real::Camera::getInstace().handleInput(window);
         }
     }
 
