@@ -3,7 +3,7 @@
 
 namespace Real
 {
-EBO::EBO(const std::vector<GLuint>& indices, int drawType) : isBound(true)
+EBO::EBO(const std::vector<GLuint>& indices, int drawType) : isBound(true), nIndices(indices.size())
 {
     glGenBuffers(1, &id);
 
@@ -32,4 +32,8 @@ void EBO::unbind()
     }
 }
 
+int EBO::getNumberOfIndices()
+{
+    return nIndices;
+}
 }

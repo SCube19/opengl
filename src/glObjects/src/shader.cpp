@@ -99,7 +99,7 @@ GLuint Shader::getProgram()
 
 namespace
 {
-GLuint prepareForSetUniform(Shader& shader, const std::string& uniformName)
+GLint prepareForSetUniform(Shader& shader, const std::string& uniformName)
 {
     shader.use();
     return glGetUniformLocation(shader.getProgram(), uniformName.c_str());
@@ -109,21 +109,106 @@ GLuint prepareForSetUniform(Shader& shader, const std::string& uniformName)
 template<>
 void Shader::setUniform(const std::string& uniformName, GLfloat value)
 {
-    GLuint uniform = prepareForSetUniform(*this, uniformName);
+    GLint uniform = prepareForSetUniform(*this, uniformName);
     glUniform1f(uniform, value);
 }
 
 template<>
 void Shader::setUniform(const std::string& uniformName, GLint value)
 {
-    GLuint uniform = prepareForSetUniform(*this, uniformName);
+    GLint uniform = prepareForSetUniform(*this, uniformName);
     glUniform1i(uniform, value);
 }
 
 template<>
 void Shader::setUniform(const std::string& uniformName, GLuint value)
 {
-    GLuint uniform = prepareForSetUniform(*this, uniformName);
+    GLint uniform = prepareForSetUniform(*this, uniformName);
     glUniform1ui(uniform, value);
 }
+
+template<>
+void Shader::setUniform(const std::string& uniformName, GLfloat value1, GLfloat value2)
+{
+    GLint uniform = prepareForSetUniform(*this, uniformName);
+    glUniform2f(uniform, value1, value2);
+}
+
+template<>
+void Shader::setUniform(const std::string& uniformName, GLint value1, GLint value2)
+{
+    GLint uniform = prepareForSetUniform(*this, uniformName);
+    glUniform2i(uniform, value1, value2);
+}
+
+template<>
+void Shader::setUniform(const std::string& uniformName, GLuint value1, GLuint value2)
+{
+    GLint uniform = prepareForSetUniform(*this, uniformName);
+    glUniform2ui(uniform, value1, value2);
+}
+
+template<>
+void Shader::setUniform(const std::string& uniformName, GLfloat value1, GLfloat value2, GLfloat value3)
+{
+    GLint uniform = prepareForSetUniform(*this, uniformName);
+    glUniform3f(uniform, value1, value2, value3);
+}
+
+template<>
+void Shader::setUniform(const std::string& uniformName, GLint value1, GLint value2, GLint value3)
+{
+    GLint uniform = prepareForSetUniform(*this, uniformName);
+    glUniform3i(uniform, value1, value2, value3);
+}
+
+template<>
+void Shader::setUniform(const std::string& uniformName, GLuint value1, GLuint value2, GLuint value3)
+{
+    GLint uniform = prepareForSetUniform(*this, uniformName);
+    glUniform3ui(uniform, value1, value2, value3);
+}
+
+template<>
+void Shader::setUniform(const std::string& uniformName, GLfloat value1, GLfloat value2, GLfloat value3, GLfloat value4)
+{
+    GLint uniform = prepareForSetUniform(*this, uniformName);
+    glUniform4f(uniform, value1, value2, value3, value4);
+}
+
+template<>
+void Shader::setUniform(const std::string& uniformName, GLint value1, GLint value2, GLint value3, GLint value4)
+{
+    GLint uniform = prepareForSetUniform(*this, uniformName);
+    glUniform4i(uniform, value1, value2, value3, value4);
+}
+
+template<>
+void Shader::setUniform(const std::string& uniformName, GLuint value1, GLuint value2, GLuint value3, GLuint value4)
+{
+    GLint uniform = prepareForSetUniform(*this, uniformName);
+    glUniform4ui(uniform, value1, value2, value3, value4);
+}
+
+void Shader::setUniformValue(
+    value_callback glUniform,
+    const std::string& uniformName,
+    GLsizei count,
+    const GLfloat* value)
+{
+    GLint uniform = prepareForSetUniform(*this, uniformName);
+    glUniform(uniform, count, value);
+}
+
+void Shader::setUniformMatrix(
+    matrix_callback glUniform,
+    const std::string& uniformName,
+    GLsizei count,
+    GLboolean transpose,
+    const GLfloat* value)
+{
+    GLint uniform = prepareForSetUniform(*this, uniformName);
+    glUniform(uniform, count, transpose, value);
+}
+
 }

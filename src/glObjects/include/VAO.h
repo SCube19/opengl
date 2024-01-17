@@ -20,6 +20,8 @@ private:
     std::unique_ptr<VBO> vbo;
     std::unique_ptr<EBO> ebo;
 
+    int nVertices;
+
 public:
     struct Config
     {
@@ -48,5 +50,8 @@ public:
 
     VBO& getVBO();
     EBO& getEBO();
+
+    int getNumberOfVertices();
+
 };
 }

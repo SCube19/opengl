@@ -58,6 +58,7 @@ void VAO::linkVBO(std::unique_ptr<VBO>&& vbo, const Config& config)
 void VAO::linkEBO(std::unique_ptr<EBO>&& ebo)
 {
     ebo = std::move(ebo);
+    nVertices = ebo->getNumberOfIndices();
 }
 
 void VAO::linkAttrib(const Config& config)
@@ -88,4 +89,10 @@ EBO& VAO::getEBO()
 {
     return *ebo;
 }
+
+int VAO::getNumberOfVertices()
+{
+    return nVertices;
+}
+
 }

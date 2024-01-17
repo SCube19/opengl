@@ -7,6 +7,7 @@ SET(SRC_FILES
     src/EBO.cpp
     src/window.cpp
     src/texture.cpp
+    src/camera.cpp
     include/glObject.h
     )
 
