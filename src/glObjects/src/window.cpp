@@ -22,6 +22,8 @@ Window::Window(Window::wsize windowSize, const std::string& windowName)
 
     glfwMakeContextCurrent(window);
     gladLoadGL();
+
+    glViewport(0, 0, size.first, size.second);
 }
 
 Window::~Window()

@@ -9,7 +9,7 @@ in vec3 color;
 // Imports the texture coordinates from the Vertex Shader
 in vec2 texCoord;
 // Imports the normal from the Vertex Shader
-flat in vec3 Normal;
+in vec3 Normal;
 // Imports the current position from the Vertex Shader
 in vec3 crntPos;
 
@@ -24,7 +24,7 @@ uniform vec3 lightPos;
 void main()
 {
 	// ambient lighting
-	float ambient = 0.20f;
+	float ambient = 0.30f;
 
 	// diffuse lighting
 	vec3 normal = normalize(Normal);

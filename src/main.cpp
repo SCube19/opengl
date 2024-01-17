@@ -7,6 +7,9 @@
 
 #include <math.h>
 #include <filesystem>
+#include <random>
+#include <chrono>
+
 
 #include "VAO.h"
 #include "VBO.h"
@@ -19,52 +22,65 @@
 // Vertices coordinates
 std::vector<GLfloat> vertices =
 {
-    -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,      0.0f, -1.0f, 0.0f, // Bottom side
-    -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 5.0f,      0.0f, -1.0f, 0.0f, // Bottom side
-     0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 5.0f,      0.0f, -1.0f, 0.0f, // Bottom side
-     0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, -1.0f, 0.0f, // Bottom side
+    -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,     -1.0f, 1.0f,  0.0f, // Left Side
+    -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,     -1.0f, 1.0f,  0.0f, // Left Side
+     0.0f, 0.5f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,     -1.0f, 1.0f,  0.0f, // Left Side
 
-    -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,     -0.8f, 0.5f,  0.0f, // Left Side
-    -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,     -0.8f, 0.5f,  0.0f, // Left Side
-     0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,     -0.8f, 0.5f,  0.0f, // Left Side
+    -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, 1.0f, -1.0f, // Non-facing side
+     0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      0.0f, 1.0f, -1.0f, // Non-facing side
+     0.0f, 0.5f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, 1.0f, -1.0f, // Non-facing side
 
-    -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, 0.5f, -0.8f, // Non-facing side
-     0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      0.0f, 0.5f, -0.8f, // Non-facing side
-     0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, 0.5f, -0.8f, // Non-facing side
+     0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      1.0f, 1.0f,  0.0f, // Right side
+     0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      1.0f, 1.0f,  0.0f, // Right side
+     0.0f, 0.5f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      1.0f, 1.0f,  0.0f, // Right side
 
-     0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      0.8f, 0.5f,  0.0f, // Right side
-     0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.8f, 0.5f,  0.0f, // Right side
-     0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.8f, 0.5f,  0.0f, // Right side
+     0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, 1.0f,  1.0f, // Facing side
+    -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,      0.0f, 1.0f,  1.0f, // Facing side
+     0.0f, 0.5f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, 1.0f,  1.0f,  // Facing side
 
-     0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, 0.5f,  0.8f, // Facing side
-    -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,      0.0f, 0.5f,  0.8f, // Facing side
-     0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, 0.5f,  0.8f  // Facing side
+    -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,      -1.0f, -1.0f,  0.0f, // Left Side Down
+    -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      -1.0f, -1.0f,  0.0f, // Left Side Down
+     0.0f, -0.5f,  0.0f,    0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      -1.0f, -1.0f,  0.0f, // Left Side Down
+
+    -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, -1.0f, -1.0f, // Non-facing side Down
+     0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      0.0f, -1.0f, -1.0f, // Non-facing side Down
+     0.0f, -0.5f,  0.0f,    0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, -1.0f, -1.0f, // Non-facing side Down
+
+     0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      1.0f, -1.0f,  0.0f, // Right side Down
+     0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      1.0f, -1.0f,  0.0f, // Right side Down
+     0.0f, -0.5f,  0.0f,    0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      1.0f, -1.0f,  0.0f, // Right side Down
+
+     0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, -1.0f,  1.0f, // Facing side Down
+    -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,      0.0f, -1.0f,  1.0f, // Facing side Down
+     0.0f, -0.5f,  0.0f,    0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, -1.0f,  1.0f  // Facing side Down
 };
 
 // Indices for vertices order
 std::vector<GLuint> indices =
 {
-    0, 1, 2, // Bottom side
-    0, 2, 3, // Bottom side
-    4, 6, 5, // Left side
-    7, 9, 8, // Non-facing side
-    10, 12, 11, // Right side
-    13, 15, 14 // Facing side
+    0, 1, 2, // Left side
+    3, 4, 5, // Non-facing side
+    6, 7, 8, // Right side
+    9, 10, 11, // Facing side
+    12, 13, 14, // left down
+    15, 16, 17, // non-facing down
+    18, 19, 20, // right down
+    21, 22, 23 // facing down
 };
 
 
 using model_3d = std::pair<std::vector<GLfloat>, std::vector<GLuint>>;
 
 model_3d cube = {
-    {
-        -0.1f, -0.1f,  0.1f,
-    -0.1f, -0.1f, -0.1f,
-     0.1f, -0.1f, -0.1f,
-     0.1f, -0.1f,  0.1f,
-    -0.1f,  0.1f,  0.1f,
-    -0.1f,  0.1f, -0.1f,
-     0.1f,  0.1f, -0.1f,
-     0.1f,  0.1f,  0.1f
+{
+    -0.01f, -0.01f,  0.01f,
+    -0.01f, -0.01f, -0.01f,
+     0.01f, -0.01f, -0.01f,
+     0.01f, -0.01f,  0.01f,
+    -0.01f,  0.01f,  0.01f,
+    -0.01f,  0.01f, -0.01f,
+     0.01f,  0.01f, -0.01f,
+     0.01f,  0.01f,  0.01f
 },
 {	0, 1, 2,
     0, 2, 3,
@@ -87,11 +103,13 @@ int main()
     glfwInit();
 
     Real::Window window({ 800, 800 }, "Real Engine");
-    // Specify the viewport of OpenGL in the Window
-    // In this case the viewport goes from x = 0, y = 0, to x = 800, y = 800
-    glViewport(0, 0, 800, 800);
 
-    Real::Camera::getInstace().setPosition(glm::vec3(0.0f, 0.0f, 2.0f)).setSpeed(0.05f);
+
+    Real::Camera::getInstace()
+        .setPosition(glm::vec3(0.0f, 0.0f, 2.0f)).
+        setSpeed(2.0f)
+        .setSize(window.getSize())
+        .setWindow(window);
 
     glEnable(GL_DEPTH_TEST);
     {
@@ -142,6 +160,17 @@ int main()
         shader.setUniform("lightColor", lightColor.x, lightColor.y, lightColor.z, lightColor.w);
         shader.setUniform("lightPos", lightPos.x, lightPos.y, lightPos.z);
 
+
+        std::mt19937_64 rng;
+        // initialize the random number generator with time-dependent seed
+        uint64_t timeSeed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+        std::seed_seq ss{ uint32_t(timeSeed & 0xffffffff), uint32_t(timeSeed >> 32) };
+        rng.seed(ss);
+        // initialize a uniform distribution between 0 and 1
+        std::uniform_real_distribution<double> unif(0.3f, 2);
+
+        double prevTime = glfwGetTime();
+
         // Main while loop
         while (!glfwWindowShouldClose(&window))
         {
@@ -149,6 +178,12 @@ int main()
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+            double currTime = glfwGetTime();
+            if (currTime - prevTime >= 1 / 30)
+            {
+                pyramidModel = glm::rotate(pyramidModel, glm::radians(2.0f), glm::vec3(unif(rng), unif(rng), unif(rng)));
+                shader.setUniformMatrix(glUniformMatrix4fv, "model", 1, GL_FALSE, glm::value_ptr(pyramidModel));
+            }
             shader.use();
 
             Real::Camera::getInstace().project(shader, "camera");
@@ -165,7 +200,7 @@ int main()
 
             glfwPollEvents();
 
-            Real::Camera::getInstace().handleInput(window);
+            Real::Camera::getInstace().handleInput();
         }
     }
 

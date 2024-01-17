@@ -15,7 +15,7 @@ out vec3 color;
 // Outputs the texture coordinates to the Fragment Shader
 out vec2 texCoord;
 // Outputs the normal for the Fragment Shader
-flat out vec3 Normal;
+out vec3 Normal;
 // Outputs the current position for the Fragment Shader
 out vec3 crntPos;
 

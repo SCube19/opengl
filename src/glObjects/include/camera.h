@@ -22,8 +22,9 @@ public:
 
 private:
     csize size = { 800, 800 };
-    float speed = 0.1f;
+    float speed = 2.0f;
     float sensitivity = 100.0f;
+    float scroll = 0.1f;
     float fov = 90.0f;
     float near = 0.1f;
     float far = 100.0f;
@@ -32,6 +33,8 @@ private:
     glm::vec3 orientation = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
+    GLFWwindow* window = nullptr;
+
     bool firstClick = true;
 
     Camera() = default;
@@ -39,19 +42,23 @@ private:
     Camera(const Camera&) = delete;
     Camera& operator= (const Camera) = delete;
 
+    static void scrollHandler(GLFWwindow* window, double xdelta, double ydelta);
+
 public:
     static Camera& getInstace();
 
     Camera& setSize(csize size);
     Camera& setSpeed(float speed);
     Camera& setSensitivity(float sensitivity);
+    Camera& setScrollSpeed(float scroll);
     Camera& setFov(float fov);
     Camera& setNear(float near);
     Camera& setFar(float far);
     Camera& setPosition(glm::vec3 position);
+    Camera& setWindow(Window& window);
 
     void project(Shader& shader, const std::string& uniform);
 
-    void handleInput(Window& window);
+    void handleInput();
 };
 }
