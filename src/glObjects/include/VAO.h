@@ -23,6 +23,7 @@ private:
     int nVertices;
 
 public:
+    VAO& operator=(VAO&& other) = default;
     struct Config
     {
         GLuint layout;
@@ -33,6 +34,7 @@ public:
     };
 
     VAO();
+    VAO(VAO&& vao) = default;
     ~VAO();
 
     void bind();

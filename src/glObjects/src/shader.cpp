@@ -17,7 +17,7 @@ std::string getFileContents(const std::string& fileName)
 }
 }
 
-void Shader::assertNoCompileError(GLuint shader, const std::string& type)
+void Shader::assertNoCompileError(GLuint shader, const std::string& type, const std::string& file)
 {
     GLint hasCompiled;
     char infoLog[1024];
@@ -28,7 +28,7 @@ void Shader::assertNoCompileError(GLuint shader, const std::string& type)
         if (hasCompiled == GL_FALSE)
         {
             glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-            throw std::runtime_error("SHADER_COMPILATION_ERROR for: " + type + "\n" + infoLog + "\n");
+            throw std::runtime_error("SHADER_COMPILATION_ERROR in " + file + " for: " + type + "\n" + infoLog + "\n");
         }
     }
     else
@@ -37,7 +37,7 @@ void Shader::assertNoCompileError(GLuint shader, const std::string& type)
         if (hasCompiled == GL_FALSE)
         {
             glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-            throw std::runtime_error("SHADER_LINKING_ERROR for: " + type + "\n" + infoLog + "\n");
+            throw std::runtime_error("SHADER_LINKING_ERROR in " + file + " for: " + type + "\n" + infoLog + "\n");
         }
     }
 }
@@ -56,7 +56,7 @@ Shader::Shader(const std::string& vertexFile, const std::string& fragmentFile)
     // Compile the Vertex Shader into machine code
     glCompileShader(vertexShader);
     // Checks if Shader compiled succesfully
-    assertNoCompileError(vertexShader, "VERTEX");
+    assertNoCompileError(vertexShader, "VERTEX", vertexFile);
 
     // Create Fragment Shader Object and get its reference
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -65,7 +65,7 @@ Shader::Shader(const std::string& vertexFile, const std::string& fragmentFile)
     // Compile the Vertex Shader into machine code
     glCompileShader(fragmentShader);
     // Checks if Shader compiled succesfully
-    assertNoCompileError(fragmentShader, "FRAGMENT");
+    assertNoCompileError(fragmentShader, "FRAGMENT", fragmentFile);
 
     // Create Shader Program Object and get its reference
     this->shaderProgram = glCreateProgram();
@@ -75,7 +75,7 @@ Shader::Shader(const std::string& vertexFile, const std::string& fragmentFile)
     // Wrap-up/Link all the shaders together into the Shader Program
     glLinkProgram(this->shaderProgram);
     // Checks if Shaders linked succesfully
-    assertNoCompileError(this->shaderProgram, "PROGRAM");
+    assertNoCompileError(this->shaderProgram, "PROGRAM", "");
 
     // Delete the now useless Vertex and Fragment Shader objects
     glDeleteShader(vertexShader);

@@ -13,14 +13,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(CPack)
 
-include_directories(inc src/glObjects/include)
+include_directories(inc src/glObjects/include src/utility/include)
 
 add_subdirectory(src)
 add_subdirectory(src/glObjects)
+add_subdirectory(src/utility)
 
 add_executable(real_engine src/main.cpp)
 
-target_link_libraries(real_engine glad stb glfw glObjects)
+target_link_libraries(real_engine glad stb glfw glObjects utility)
 
 file(COPY shaders DESTINATION .)
 file(COPY textures DESTINATION .)

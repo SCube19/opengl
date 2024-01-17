@@ -1,5 +1,7 @@
 #include "camera.h"
 
+#include <uniforms/uniforms.h>
+
 #include <functional>
 
 using namespace std::placeholders;
@@ -67,13 +69,22 @@ Camera& Camera::setWindow(Window& window)
     return *this;
 }
 
+glm::vec3 Camera::getPosition()
+{
+    return position;
+}
+glm::vec3 Camera::getOrientation()
+{
+    return orientation;
+}
+
 void Camera::scrollHandler(GLFWwindow* window, double xdelta, double ydelta)
 {
     Camera& instance = Camera::getInstace();
     instance.position += instance.scroll * static_cast<float>(ydelta) * instance.orientation;
 }
 
-void Camera::project(Shader& shader, const std::string& uniform)
+void Camera::project(Shader& shader)
 {
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
@@ -85,7 +96,7 @@ void Camera::project(Shader& shader, const std::string& uniform)
         this->near,
         this->far);
 
-    shader.setUniformMatrix(glUniformMatrix4fv, uniform, 1, GL_FALSE, glm::value_ptr(projection * view));
+    shader.setUniformMatrix(glUniformMatrix4fv, Uniform::CAMERA, 1, GL_FALSE, glm::value_ptr(projection * view));
 }
 
 void Camera::handleInput()

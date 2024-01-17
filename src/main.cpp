@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "uniforms/uniforms.h"
 
 #include <math.h>
 #include <filesystem>
@@ -18,6 +19,8 @@
 #include "window.h"
 #include "texture.h"
 #include "camera.h"
+#include "model.h"
+#include "light.h"
 
 // Vertices coordinates
 std::vector<GLfloat> vertices =
@@ -141,35 +144,21 @@ int main()
         vao.linkAttrib({
             3, 3, GL_FLOAT, 11 * sizeof(float), (void*)(8 * sizeof(float))
             });
-        Real::Texture popcat(std::filesystem::absolute("textures/brick.jpg"), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
-        popcat.bindShader(shader, "tex0");
-
-        glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-        glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
-        glm::mat4 lightModel = glm::mat4(1.0f);
-        lightModel = glm::translate(lightModel, lightPos);
-
-        glm::vec3 pyramidPos = glm::vec3(0.0f, 0.0f, 0.0f);
-        glm::mat4 pyramidModel = glm::mat4(1.0f);
-        pyramidModel = glm::translate(pyramidModel, pyramidPos);
-
-        lightShader.setUniformMatrix(glUniformMatrix4fv, "model", 1, GL_FALSE, glm::value_ptr(lightModel));
-        shader.setUniformMatrix(glUniformMatrix4fv, "model", 1, GL_FALSE, glm::value_ptr(pyramidModel));
-
-        lightShader.setUniform("lightColor", lightColor.x, lightColor.y, lightColor.z, lightColor.w);
-        shader.setUniform("lightColor", lightColor.x, lightColor.y, lightColor.z, lightColor.w);
-        shader.setUniform("lightPos", lightPos.x, lightPos.y, lightPos.z);
+        Real::Texture popcat(std::filesystem::absolute("textures/popcat.png"), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
 
 
-        std::mt19937_64 rng;
-        // initialize the random number generator with time-dependent seed
-        uint64_t timeSeed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-        std::seed_seq ss{ uint32_t(timeSeed & 0xffffffff), uint32_t(timeSeed >> 32) };
-        rng.seed(ss);
-        // initialize a uniform distribution between 0 and 1
-        std::uniform_real_distribution<double> unif(0.3f, 2);
 
-        double prevTime = glfwGetTime();
+        Real::Light light(
+            glm::vec3(0.5f, 0.5f, 0.5f),
+            cubevao,
+            lightShader,
+            glm::vec4(1.0f)
+        );
+
+
+        Real::Model pyramid(glm::vec3(0.0f, 0.0f, 0.0f), vao, shader, popcat, "tex0");
+
+        pyramid.applyLight(light, "lightPos", "lightColor");
 
         // Main while loop
         while (!glfwWindowShouldClose(&window))
@@ -178,23 +167,9 @@ int main()
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            double currTime = glfwGetTime();
-            if (currTime - prevTime >= 1 / 30)
-            {
-                pyramidModel = glm::rotate(pyramidModel, glm::radians(2.0f), glm::vec3(unif(rng), unif(rng), unif(rng)));
-                shader.setUniformMatrix(glUniformMatrix4fv, "model", 1, GL_FALSE, glm::value_ptr(pyramidModel));
-            }
-            shader.use();
+            pyramid.draw();
 
-            Real::Camera::getInstace().project(shader, "camera");
-
-            popcat.bind();
-
-            vao.draw();
-
-            lightShader.use();
-            Real::Camera::getInstace().project(lightShader, "camera");
-            cubevao.draw();
+            light.draw();
 
             glfwSwapBuffers(&window);
 

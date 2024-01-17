@@ -24,7 +24,7 @@ private:
     csize size = { 800, 800 };
     float speed = 2.0f;
     float sensitivity = 100.0f;
-    float scroll = 0.1f;
+    float scroll = 0.08f;
     float fov = 90.0f;
     float near = 0.1f;
     float far = 100.0f;
@@ -57,7 +57,10 @@ public:
     Camera& setPosition(glm::vec3 position);
     Camera& setWindow(Window& window);
 
-    void project(Shader& shader, const std::string& uniform);
+    glm::vec3 getPosition();
+    glm::vec3 getOrientation();
+
+    void project(Shader& shader);
 
     void handleInput();
 };

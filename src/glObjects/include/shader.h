@@ -10,7 +10,7 @@ class Shader
 {
 private:
     GLuint shaderProgram;
-    static void assertNoCompileError(GLuint shader, const std::string& type);
+    static void assertNoCompileError(GLuint shader, const std::string& type, const std::string& file);
 
 public:
     Shader(const std::string& vertexFile, const std::string& fragmentFile);
