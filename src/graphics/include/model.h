@@ -2,7 +2,6 @@
 
 #include "worldObject.h"
 #include "textureSet.h"
-#include "light.h"
 
 namespace Real
 {
@@ -14,10 +13,9 @@ private:
     void updateTexturesUniform();
 
 public:
-    template<class T1, class T2>
-    Model(T1&& position, T2&& vao, Shader& shader,
+    Model(const glm::vec3& position, std::unique_ptr<VAO>&& vao, Shader& shader,
         TextureSet& textures)
-        : WorldObject(position, vao, shader),
+        : WorldObject(position, std::move(vao), shader),
         textures(textures)
     {
         this->updateTexturesUniform();
@@ -26,8 +24,6 @@ public:
 
     TextureSet& getTextureSet();
     void setTextureSet(TextureSet& textures);
-
-    void applyLight(Light& light, const std::string& positionUniform, const std::string& colorUniform);
 
     void draw() override;
 };

@@ -7,7 +7,18 @@
 
 namespace Real
 {
-VAO::VAO() : vbo(nullptr), ebo(nullptr)
+
+VAO::VAO(const std::vector<GLfloat>& vertices,
+    const std::vector<GLuint>& indices,
+    const Config& config,
+    int drawType) : VAO()
+
+{
+    this->fromVectors(vertices, indices, config, drawType);
+}
+
+
+VAO::VAO() : vbo(nullptr), ebo(nullptr), isBound(false)
 {
     glGenVertexArrays(1, &id);
 }
@@ -72,7 +83,7 @@ void VAO::fromVectors(
     const Config& config,
     int drawType)
 {
-    bind();
+    this->bind();
     std::unique_ptr<VBO> vbo = std::make_unique<VBO>(vertices, drawType);
     std::unique_ptr<EBO> ebo = std::make_unique<EBO>(indices, drawType);
 

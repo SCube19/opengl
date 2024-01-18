@@ -9,16 +9,6 @@ TextureSet::TextureSet(std::unique_ptr<Texture> texture, std::unique_ptr<Texture
 {
 }
 
-// Texture* TextureSet::getTexture()
-// {
-//     return *texture;
-// }
-
-// std::optional<Texture>& TextureSet::getSpecular()
-// {
-//     return specular;
-// }
-
 void TextureSet::bind()
 {
     if (texture != nullptr)
@@ -30,8 +20,8 @@ void TextureSet::bind()
 void TextureSet::bindShader(Shader& shader)
 {
     if (texture != nullptr)
-        texture->bindShader(shader, Uniform::TEXTURE);
+        texture->bindShader(shader);
     if (specular != nullptr)
-        specular->bindShader(shader, Uniform::SPECULAR);
+        specular->bindShader(shader);
 }
 }

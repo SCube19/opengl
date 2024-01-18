@@ -13,25 +13,25 @@ namespace Real
 {
 class Texture : public GLObject
 {
+public:
+    enum class Type
+    {
+        DIFFUSE,
+        SPECULAR
+    };
 private:
     GLuint id;
-    GLenum type;
+    Type type;
     GLuint slot;
 
 public:
-    Texture(
-        const std::string& image,
-        GLenum texType,
-        GLuint slot,
-        GLenum format,
-        GLenum pixelType);
+    Texture(const std::string& image, Type texType, GLuint slot);
 
     ~Texture();
-
 
     void bind();
     void unbind();
 
-    void bindShader(Shader& shader, const std::string& uniformName);
+    void bindShader(Shader& shader);
 };
 }

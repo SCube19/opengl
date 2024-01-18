@@ -8,6 +8,8 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/vector_angle.hpp>
 
+#include <any>
+
 #include "shader.h"
 #include "VAO.h"
 
@@ -23,13 +25,14 @@ protected:
     glm::vec3 position;
     glm::mat4 model;
 
-    VAO vao;
+    std::unique_ptr<VAO> vao;
     Shader& shader;
 
 public:
-    template<class T1, class T2>
-    WorldObject(T1&& position, T2&& vao, Shader& shader)
-        :position(std::forward<T1>(position)),
+    using uniform = std::pair<std::string, std::any>;
+
+    WorldObject(const glm::vec3& position, std::unique_ptr<VAO>&& vao, Shader& shader)
+        :position(position),
         model(glm::mat4(1.0f)),
         vao(std::move(vao)),
         shader(shader)

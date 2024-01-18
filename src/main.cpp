@@ -22,84 +22,7 @@
 #include "model.h"
 #include "light.h"
 #include "textureSet.h"
-
-// Vertices coordinates
-std::vector<GLfloat> vertices =
-{
-    -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,     -1.0f, 1.0f,  0.0f, // Left Side
-    -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,     -1.0f, 1.0f,  0.0f, // Left Side
-     0.0f, 0.5f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,     -1.0f, 1.0f,  0.0f, // Left Side
-
-    -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, 1.0f, -1.0f, // Non-facing side
-     0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      0.0f, 1.0f, -1.0f, // Non-facing side
-     0.0f, 0.5f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, 1.0f, -1.0f, // Non-facing side
-
-     0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      1.0f, 1.0f,  0.0f, // Right side
-     0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      1.0f, 1.0f,  0.0f, // Right side
-     0.0f, 0.5f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      1.0f, 1.0f,  0.0f, // Right side
-
-     0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, 1.0f,  1.0f, // Facing side
-    -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,      0.0f, 1.0f,  1.0f, // Facing side
-     0.0f, 0.5f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, 1.0f,  1.0f,  // Facing side
-
-    -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,      -1.0f, -1.0f,  0.0f, // Left Side Down
-    -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      -1.0f, -1.0f,  0.0f, // Left Side Down
-     0.0f, -0.5f,  0.0f,    0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      -1.0f, -1.0f,  0.0f, // Left Side Down
-
-    -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, -1.0f, -1.0f, // Non-facing side Down
-     0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      0.0f, -1.0f, -1.0f, // Non-facing side Down
-     0.0f, -0.5f,  0.0f,    0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, -1.0f, -1.0f, // Non-facing side Down
-
-     0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      1.0f, -1.0f,  0.0f, // Right side Down
-     0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      1.0f, -1.0f,  0.0f, // Right side Down
-     0.0f, -0.5f,  0.0f,    0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      1.0f, -1.0f,  0.0f, // Right side Down
-
-     0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, -1.0f,  1.0f, // Facing side Down
-    -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,      0.0f, -1.0f,  1.0f, // Facing side Down
-     0.0f, -0.5f,  0.0f,    0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, -1.0f,  1.0f  // Facing side Down
-};
-
-// Indices for vertices order
-std::vector<GLuint> indices =
-{
-    0, 1, 2, // Left side
-    3, 4, 5, // Non-facing side
-    6, 7, 8, // Right side
-    9, 10, 11, // Facing side
-    12, 13, 14, // left down
-    15, 16, 17, // non-facing down
-    18, 19, 20, // right down
-    21, 22, 23 // facing down
-};
-
-
-using model_3d = std::pair<std::vector<GLfloat>, std::vector<GLuint>>;
-
-model_3d cube = {
-{
-    -0.01f, -0.01f,  0.01f,
-    -0.01f, -0.01f, -0.01f,
-     0.01f, -0.01f, -0.01f,
-     0.01f, -0.01f,  0.01f,
-    -0.01f,  0.01f,  0.01f,
-    -0.01f,  0.01f, -0.01f,
-     0.01f,  0.01f, -0.01f,
-     0.01f,  0.01f,  0.01f
-},
-{	0, 1, 2,
-    0, 2, 3,
-    0, 4, 7,
-    0, 7, 3,
-    3, 7, 6,
-    3, 6, 2,
-    2, 6, 5,
-    2, 5, 1,
-    1, 5, 4,
-    1, 4, 0,
-    4, 5, 6,
-    4, 6, 7}
-
-};
+#include "VAOFactory.h"
 
 int main()
 {
@@ -126,40 +49,31 @@ int main()
             std::filesystem::absolute("shaders/light.frag")
         );
 
-        Real::VAO vao;
-        Real::VAO cubevao;
+        std::unique_ptr<Real::VAO> vao = Real::VAOFactory::get(Real::VAOFactory::Shape::D8);
 
-        vao.fromVectors(vertices, indices, {
-            0, 3, GL_FLOAT, 11 * sizeof(float), (void*)0
-            });
-        cubevao.fromVectors(cube.first, cube.second, {
-            0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0
-            });
-
-        vao.linkAttrib({
-            1, 3, GL_FLOAT, 11 * sizeof(float), (void*)(3 * sizeof(float))
-            });
-        vao.linkAttrib({
-            2, 2, GL_FLOAT, 11 * sizeof(float), (void*)(6 * sizeof(float))
-            });
-        vao.linkAttrib({
-            3, 3, GL_FLOAT, 11 * sizeof(float), (void*)(8 * sizeof(float))
-            });
-        std::unique_ptr<Real::Texture> popcat = std::make_unique<Real::Texture>(std::filesystem::absolute("textures/planks.png"), GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE);
-        std::unique_ptr<Real::Texture> specular = std::make_unique<Real::Texture>(std::filesystem::absolute("textures/planksSpec.png"), GL_TEXTURE_2D, 1, GL_RED, GL_UNSIGNED_BYTE);
+        std::unique_ptr<Real::Texture> popcat =
+            std::make_unique<Real::Texture>(std::filesystem::absolute("textures/planks.png"), Real::Texture::Type::DIFFUSE, 0);
+        std::unique_ptr<Real::Texture> specular =
+            std::make_unique<Real::Texture>(std::filesystem::absolute("textures/planksSpec.png"), Real::Texture::Type::SPECULAR, 1);
 
         Real::TextureSet textures(std::move(popcat), std::move(specular));
 
         Real::Light light(
-            glm::vec3(0.5f, 0.5f, 0.5f),
-            cubevao,
+            Real::Light::Type::SPOTLIGHT,
+            glm::vec3(0.3f, 0.7f, 0.7f),
             lightShader,
-            glm::vec4(1.0f)
+            glm::vec4(1.0f),
+            1.0f,
+            Real::Light::SpotlightParameters{
+                direction: glm::vec3(1.0f, 1.0f, 1.0f),
+                inner : 0.03f,
+                outer : 0.10f,
+            }
         );
 
-        Real::Model pyramid(glm::vec3(0.0f, 0.0f, 0.0f), vao, shader, textures);
+        Real::Model pyramid(glm::vec3(0.0f, 0.0f, 0.0f), std::move(vao), shader, textures);
 
-        pyramid.applyLight(light, "lightPos", "lightColor");
+        light.applyLight(pyramid);
 
         // Main while loop
         while (!glfwWindowShouldClose(&window))
@@ -167,6 +81,7 @@ int main()
             glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            shader.use();
 
             pyramid.draw();
 
