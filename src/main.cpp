@@ -1,50 +1,185 @@
-#include <iostream>
-#include "glad/glad.h"
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <stb/stb_image.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include "uniforms/uniforms.h"
 
-int main(int, char **)
+#include <math.h>
+#include <filesystem>
+#include <random>
+#include <chrono>
+
+
+#include "VAO.h"
+#include "VBO.h"
+#include "EBO.h"
+#include "shader.h"
+#include "window.h"
+#include "texture.h"
+#include "camera.h"
+#include "model.h"
+#include "light.h"
+
+// Vertices coordinates
+std::vector<GLfloat> vertices =
 {
-    GLFWwindow *window;
+    -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,     -1.0f, 1.0f,  0.0f, // Left Side
+    -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,     -1.0f, 1.0f,  0.0f, // Left Side
+     0.0f, 0.5f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,     -1.0f, 1.0f,  0.0f, // Left Side
 
-    if (!glfwInit())
+    -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, 1.0f, -1.0f, // Non-facing side
+     0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      0.0f, 1.0f, -1.0f, // Non-facing side
+     0.0f, 0.5f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, 1.0f, -1.0f, // Non-facing side
+
+     0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      1.0f, 1.0f,  0.0f, // Right side
+     0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      1.0f, 1.0f,  0.0f, // Right side
+     0.0f, 0.5f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      1.0f, 1.0f,  0.0f, // Right side
+
+     0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, 1.0f,  1.0f, // Facing side
+    -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,      0.0f, 1.0f,  1.0f, // Facing side
+     0.0f, 0.5f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, 1.0f,  1.0f,  // Facing side
+
+    -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,      -1.0f, -1.0f,  0.0f, // Left Side Down
+    -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      -1.0f, -1.0f,  0.0f, // Left Side Down
+     0.0f, -0.5f,  0.0f,    0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      -1.0f, -1.0f,  0.0f, // Left Side Down
+
+    -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, -1.0f, -1.0f, // Non-facing side Down
+     0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      0.0f, -1.0f, -1.0f, // Non-facing side Down
+     0.0f, -0.5f,  0.0f,    0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, -1.0f, -1.0f, // Non-facing side Down
+
+     0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      1.0f, -1.0f,  0.0f, // Right side Down
+     0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      1.0f, -1.0f,  0.0f, // Right side Down
+     0.0f, -0.5f,  0.0f,    0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      1.0f, -1.0f,  0.0f, // Right side Down
+
+     0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, -1.0f,  1.0f, // Facing side Down
+    -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,      0.0f, -1.0f,  1.0f, // Facing side Down
+     0.0f, -0.5f,  0.0f,    0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, -1.0f,  1.0f  // Facing side Down
+};
+
+// Indices for vertices order
+std::vector<GLuint> indices =
+{
+    0, 1, 2, // Left side
+    3, 4, 5, // Non-facing side
+    6, 7, 8, // Right side
+    9, 10, 11, // Facing side
+    12, 13, 14, // left down
+    15, 16, 17, // non-facing down
+    18, 19, 20, // right down
+    21, 22, 23 // facing down
+};
+
+
+using model_3d = std::pair<std::vector<GLfloat>, std::vector<GLuint>>;
+
+model_3d cube = {
+{
+    -0.01f, -0.01f,  0.01f,
+    -0.01f, -0.01f, -0.01f,
+     0.01f, -0.01f, -0.01f,
+     0.01f, -0.01f,  0.01f,
+    -0.01f,  0.01f,  0.01f,
+    -0.01f,  0.01f, -0.01f,
+     0.01f,  0.01f, -0.01f,
+     0.01f,  0.01f,  0.01f
+},
+{	0, 1, 2,
+    0, 2, 3,
+    0, 4, 7,
+    0, 7, 3,
+    3, 7, 6,
+    3, 6, 2,
+    2, 6, 5,
+    2, 5, 1,
+    1, 5, 4,
+    1, 4, 0,
+    4, 5, 6,
+    4, 6, 7}
+
+};
+
+int main()
+{
+    // Initialize GLFW
+    glfwInit();
+
+    Real::Window window({ 800, 800 }, "Real Engine");
+
+
+    Real::Camera::getInstace()
+        .setPosition(glm::vec3(0.0f, 0.0f, 2.0f)).
+        setSpeed(2.0f)
+        .setSize(window.getSize())
+        .setWindow(window);
+
+    glEnable(GL_DEPTH_TEST);
     {
-        return -1;
-    }
+        Real::Shader shader(
+            std::filesystem::absolute("shaders/default.vert"),
+            std::filesystem::absolute("shaders/default.frag"));
 
-    window = glfwCreateWindow(640, 480, "Grafika project", NULL, NULL);
-    glfwMakeContextCurrent(window);
+        Real::Shader lightShader(
+            std::filesystem::absolute("shaders/light.vert"),
+            std::filesystem::absolute("shaders/light.frag")
+        );
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Couldn't load opengl" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
+        Real::VAO vao;
+        Real::VAO cubevao;
 
-    float triangle[] =
+        vao.fromVectors(vertices, indices, {
+            0, 3, GL_FLOAT, 11 * sizeof(float), (void*)0
+            });
+        cubevao.fromVectors(cube.first, cube.second, {
+            0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0
+            });
+
+        vao.linkAttrib({
+            1, 3, GL_FLOAT, 11 * sizeof(float), (void*)(3 * sizeof(float))
+            });
+        vao.linkAttrib({
+            2, 2, GL_FLOAT, 11 * sizeof(float), (void*)(6 * sizeof(float))
+            });
+        vao.linkAttrib({
+            3, 3, GL_FLOAT, 11 * sizeof(float), (void*)(8 * sizeof(float))
+            });
+        Real::Texture popcat(std::filesystem::absolute("textures/popcat.png"), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+
+
+
+        Real::Light light(
+            glm::vec3(0.5f, 0.5f, 0.5f),
+            cubevao,
+            lightShader,
+            glm::vec4(1.0f)
+        );
+
+
+        Real::Model pyramid(glm::vec3(0.0f, 0.0f, 0.0f), vao, shader, popcat, "tex0");
+
+        pyramid.applyLight(light, "lightPos", "lightColor");
+
+        // Main while loop
+        while (!glfwWindowShouldClose(&window))
         {
-            -.5f, -.5f, -.5f,
-            0.f, .5f, 0.f,
-            .5f, -.5f, 0.f};
+            glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 
-    uint32_t vao;
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glGenBuffers(1, &vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vao);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(triangle) * sizeof(triangle) / sizeof(triangle[0]), &triangle, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void *)0);
-    glEnableVertexAttribArray(0);
+            pyramid.draw();
 
-    while (!glfwWindowShouldClose(window))
-    {
-        glClear(GL_COLOR_BUFFER_BIT);
+            light.draw();
 
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+            glfwSwapBuffers(&window);
 
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+            glfwPollEvents();
+
+            Real::Camera::getInstace().handleInput();
+        }
     }
 
+    // Terminate GLFW before ending the program
     glfwTerminate();
     return 0;
 }
