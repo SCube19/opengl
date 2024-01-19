@@ -97,15 +97,6 @@ GLuint Shader::getProgram()
     return shaderProgram;
 }
 
-namespace
-{
-GLint prepareForSetUniform(Shader& shader, const std::string& uniformName)
-{
-    shader.use();
-    return glGetUniformLocation(shader.getProgram(), uniformName.c_str());
-}
-}
-
 template<>
 void Shader::setUniform(const std::string& uniformName, GLfloat value)
 {
@@ -188,16 +179,6 @@ void Shader::setUniform(const std::string& uniformName, GLuint value1, GLuint va
 {
     GLint uniform = prepareForSetUniform(*this, uniformName);
     glUniform4ui(uniform, value1, value2, value3, value4);
-}
-
-void Shader::setUniformValue(
-    value_callback glUniform,
-    const std::string& uniformName,
-    GLsizei count,
-    const GLfloat* value)
-{
-    GLint uniform = prepareForSetUniform(*this, uniformName);
-    glUniform(uniform, count, value);
 }
 
 void Shader::setUniformMatrix(

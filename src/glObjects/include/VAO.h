@@ -23,7 +23,6 @@ private:
     int nVertices;
 
 public:
-    VAO& operator=(VAO&& other) = default;
     struct Config
     {
         GLuint layout;
@@ -33,8 +32,12 @@ public:
         void* offset;
     };
 
+    VAO(const std::vector<GLfloat>& vertices,
+        const std::vector<GLuint>& indices,
+        const Config& config,
+        int drawType = GL_STATIC_DRAW);
     VAO();
-    VAO(VAO&& vao) = default;
+
     ~VAO();
 
     void bind();

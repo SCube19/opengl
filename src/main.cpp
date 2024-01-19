@@ -10,7 +10,7 @@
 #include <filesystem>
 #include <random>
 #include <chrono>
-
+#include <optional>
 
 #include "VAO.h"
 #include "VBO.h"
@@ -21,84 +21,9 @@
 #include "camera.h"
 #include "model.h"
 #include "light.h"
-
-// Vertices coordinates
-std::vector<GLfloat> vertices =
-{
-    -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,     -1.0f, 1.0f,  0.0f, // Left Side
-    -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,     -1.0f, 1.0f,  0.0f, // Left Side
-     0.0f, 0.5f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,     -1.0f, 1.0f,  0.0f, // Left Side
-
-    -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, 1.0f, -1.0f, // Non-facing side
-     0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      0.0f, 1.0f, -1.0f, // Non-facing side
-     0.0f, 0.5f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, 1.0f, -1.0f, // Non-facing side
-
-     0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      1.0f, 1.0f,  0.0f, // Right side
-     0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      1.0f, 1.0f,  0.0f, // Right side
-     0.0f, 0.5f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      1.0f, 1.0f,  0.0f, // Right side
-
-     0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, 1.0f,  1.0f, // Facing side
-    -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,      0.0f, 1.0f,  1.0f, // Facing side
-     0.0f, 0.5f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, 1.0f,  1.0f,  // Facing side
-
-    -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,      -1.0f, -1.0f,  0.0f, // Left Side Down
-    -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      -1.0f, -1.0f,  0.0f, // Left Side Down
-     0.0f, -0.5f,  0.0f,    0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      -1.0f, -1.0f,  0.0f, // Left Side Down
-
-    -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, -1.0f, -1.0f, // Non-facing side Down
-     0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      0.0f, -1.0f, -1.0f, // Non-facing side Down
-     0.0f, -0.5f,  0.0f,    0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, -1.0f, -1.0f, // Non-facing side Down
-
-     0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      1.0f, -1.0f,  0.0f, // Right side Down
-     0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      1.0f, -1.0f,  0.0f, // Right side Down
-     0.0f, -0.5f,  0.0f,    0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      1.0f, -1.0f,  0.0f, // Right side Down
-
-     0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, -1.0f,  1.0f, // Facing side Down
-    -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,      0.0f, -1.0f,  1.0f, // Facing side Down
-     0.0f, -0.5f,  0.0f,    0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, -1.0f,  1.0f  // Facing side Down
-};
-
-// Indices for vertices order
-std::vector<GLuint> indices =
-{
-    0, 1, 2, // Left side
-    3, 4, 5, // Non-facing side
-    6, 7, 8, // Right side
-    9, 10, 11, // Facing side
-    12, 13, 14, // left down
-    15, 16, 17, // non-facing down
-    18, 19, 20, // right down
-    21, 22, 23 // facing down
-};
-
-
-using model_3d = std::pair<std::vector<GLfloat>, std::vector<GLuint>>;
-
-model_3d cube = {
-{
-    -0.01f, -0.01f,  0.01f,
-    -0.01f, -0.01f, -0.01f,
-     0.01f, -0.01f, -0.01f,
-     0.01f, -0.01f,  0.01f,
-    -0.01f,  0.01f,  0.01f,
-    -0.01f,  0.01f, -0.01f,
-     0.01f,  0.01f, -0.01f,
-     0.01f,  0.01f,  0.01f
-},
-{	0, 1, 2,
-    0, 2, 3,
-    0, 4, 7,
-    0, 7, 3,
-    3, 7, 6,
-    3, 6, 2,
-    2, 6, 5,
-    2, 5, 1,
-    1, 5, 4,
-    1, 4, 0,
-    4, 5, 6,
-    4, 6, 7}
-
-};
+#include "textureSet.h"
+#include "VAOFactory.h"
+#include "lightManager.h"
 
 int main()
 {
@@ -116,50 +41,114 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
     {
-        Real::Shader shader(
-            std::filesystem::absolute("shaders/default.vert"),
-            std::filesystem::absolute("shaders/default.frag"));
+        std::unique_ptr<Real::Shader> shader(
+            new Real::Shader(
+                std::filesystem::absolute("shaders/default.vert"),
+                std::filesystem::absolute("shaders/default.frag")));
 
-        Real::Shader lightShader(
-            std::filesystem::absolute("shaders/light.vert"),
-            std::filesystem::absolute("shaders/light.frag")
-        );
+        std::unique_ptr<Real::Shader> shader2(
+            new Real::Shader(
+                std::filesystem::absolute("shaders/default.vert"),
+                std::filesystem::absolute("shaders/default.frag")));
 
-        Real::VAO vao;
-        Real::VAO cubevao;
+        std::unique_ptr<Real::Shader> shader3(
+            new Real::Shader(
+                std::filesystem::absolute("shaders/default.vert"),
+                std::filesystem::absolute("shaders/default.frag")));
 
-        vao.fromVectors(vertices, indices, {
-            0, 3, GL_FLOAT, 11 * sizeof(float), (void*)0
-            });
-        cubevao.fromVectors(cube.first, cube.second, {
-            0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0
-            });
+        std::unique_ptr<Real::Shader> lightShader(
+            new Real::Shader(
+                std::filesystem::absolute("shaders/light.vert"),
+                std::filesystem::absolute("shaders/light.frag")));
 
-        vao.linkAttrib({
-            1, 3, GL_FLOAT, 11 * sizeof(float), (void*)(3 * sizeof(float))
-            });
-        vao.linkAttrib({
-            2, 2, GL_FLOAT, 11 * sizeof(float), (void*)(6 * sizeof(float))
-            });
-        vao.linkAttrib({
-            3, 3, GL_FLOAT, 11 * sizeof(float), (void*)(8 * sizeof(float))
-            });
-        Real::Texture popcat(std::filesystem::absolute("textures/popcat.png"), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+        std::unique_ptr<Real::Shader> lightShader2(
+            new Real::Shader(
+                std::filesystem::absolute("shaders/light.vert"),
+                std::filesystem::absolute("shaders/light.frag")));
 
+        std::unique_ptr<Real::Shader> lightShader3(
+            new Real::Shader(
+                std::filesystem::absolute("shaders/light.vert"),
+                std::filesystem::absolute("shaders/light.frag")));
 
-
-        Real::Light light(
-            glm::vec3(0.5f, 0.5f, 0.5f),
-            cubevao,
-            lightShader,
-            glm::vec4(1.0f)
-        );
+        std::unique_ptr<Real::Shader> lightShader4(
+            new Real::Shader(
+                std::filesystem::absolute("shaders/light.vert"),
+                std::filesystem::absolute("shaders/light.frag")));
 
 
-        Real::Model pyramid(glm::vec3(0.0f, 0.0f, 0.0f), vao, shader, popcat, "tex0");
+        std::unique_ptr<Real::VAO> vao = Real::VAOFactory::get(Real::VAOFactory::Shape::D8);
+        std::unique_ptr<Real::VAO> plane = Real::VAOFactory::get(Real::VAOFactory::Shape::PLANE);
+        std::unique_ptr<Real::VAO> plane2 = Real::VAOFactory::get(Real::VAOFactory::Shape::PLANE);
 
-        pyramid.applyLight(light, "lightPos", "lightColor");
+        std::shared_ptr<Real::Texture> popcat =
+            std::make_unique<Real::Texture>(std::filesystem::absolute("textures/planks.png"), Real::Texture::Type::DIFFUSE, 0);
+        std::shared_ptr<Real::Texture> specular =
+            std::make_unique<Real::Texture>(std::filesystem::absolute("textures/planksSpec.png"), Real::Texture::Type::SPECULAR, 1);
 
+        Real::TextureSet textures(popcat, specular);
+
+        std::unique_ptr<Real::Light> light(new Real::Light(
+            Real::Light::Type::DIRECTIONAL,
+            glm::vec3(.0f, 1.0f, .0f),
+            std::move(lightShader),
+            glm::vec4(1.0f),
+            1.0f,
+            Real::Light::DirectionalParameters{
+                direction: glm::vec3(-1.5f, -1.0f, -1.0f)
+            }
+        ));
+
+        std::unique_ptr<Real::Light> light2(new Real::Light(
+            Real::Light::Type::SPOTLIGHT,
+            glm::vec3(0.0f, 1.0f, .0f),
+            std::move(lightShader2),
+            glm::vec4(1.0f),
+            5.5f,
+            Real::Light::SpotlightParameters{
+                direction: glm::vec3(0.0f, -1.0f, 0.0f),
+                inner : 0.99f,
+                outer : 0.97f,
+            }
+        ));
+
+        std::unique_ptr<Real::Light> light3(new Real::Light(
+            Real::Light::Type::POINT,
+            glm::vec3(-5.0f, 0.1f, 0.2f),
+            std::move(lightShader3),
+            glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
+            2.0f,
+            Real::Light::PointParameters{
+                falloff: glm::vec2(3.0f, 0.7f)
+            }
+        ));
+
+        std::unique_ptr<Real::Light> light4(new Real::Light(
+            Real::Light::Type::POINT,
+            glm::vec3(-0.5f, 0.2f, .0f),
+            std::move(lightShader4),
+            glm::vec4(1.0f),
+            7.0f,
+            Real::Light::PointParameters{
+                falloff: glm::vec2(3.0f, 0.7f)
+            }
+        ));
+
+        Real::Model pyramid(glm::vec3(0.0f, 0.0f, 0.0f), std::move(vao), std::move(shader), textures);
+        Real::Model plank(glm::vec3(0.0f, 0.0f, 0.0f), std::move(plane), std::move(shader2), textures);
+        Real::Model plank2(glm::vec3(-2.0f, 0.0f, 0.0f), std::move(plane2), std::move(shader3), textures);
+        Real::LightManager::getInstance().addLight(std::move(light));
+        Real::LightManager::getInstance().addLight(std::move(light2));
+        Real::LightManager::getInstance().addLight(std::move(light3));
+        Real::LightManager::getInstance().addLight(std::move(light4));
+
+        // plank.rotate(90.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+        plank2.rotate(-90.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+        pyramid.rotate(203.0f, glm::vec3(1.0f, 1.0f, 0.0f));
+
+        Real::LightManager::getInstance().applyLight(pyramid.getShader());
+        Real::LightManager::getInstance().applyLight(plank.getShader());
+        Real::LightManager::getInstance().applyLight(plank2.getShader());
         // Main while loop
         while (!glfwWindowShouldClose(&window))
         {
@@ -168,8 +157,10 @@ int main()
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             pyramid.draw();
+            plank.draw();
+            plank2.draw();
 
-            light.draw();
+            Real::LightManager::getInstance().draw();
 
             glfwSwapBuffers(&window);
 

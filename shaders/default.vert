@@ -28,6 +28,7 @@ uniform vec3 real_position;
 
 void main()
 {
+
 	// calculates current position
 	crntPos = vec3(real_model * vec4(aPos, 1.0f));
 	// Outputs the positions/coordinates of all vertices
@@ -38,5 +39,6 @@ void main()
 	// Assigns the texture coordinates from the Vertex Data to "texCoord"
 	texCoord = aTex;
 	// Assigns the normal from the Vertex Data to "Normal"
-	Normal = aNormal;
+	mat3 normalMatrix = mat3(transpose(inverse((real_model))));
+	Normal = normalize(normalMatrix * aNormal);
 }
