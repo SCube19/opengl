@@ -20,7 +20,7 @@ public:
 
     struct DirectionalParameters
     {
-        glm::vec2 falloff;
+        glm::vec3 direction;
     };
     struct SpotlightParameters
     {
@@ -30,7 +30,7 @@ public:
     };
     struct PointParameters
     {
-        glm::vec3 direction;
+        glm::vec2 falloff;
     };
 
     using Parameters = std::variant<DirectionalParameters, SpotlightParameters, PointParameters>;
@@ -47,8 +47,8 @@ private:
     void updateColorUniform();
 
 public:
-    Light(Type type, const glm::vec3& position, Shader& shader, const glm::vec4& color, float intensity, Parameters parameters)
-        : WorldObject(position, VAOFactory::get(VAOFactory::Shape::CUBE), shader),
+    Light(Type type, const glm::vec3& position, std::unique_ptr<Shader>&& shader, const glm::vec4& color, float intensity, Parameters parameters)
+        : WorldObject(position, VAOFactory::get(VAOFactory::Shape::CUBE), std::move(shader)),
         type(type),
         color(color),
         intensity(intensity),
@@ -62,7 +62,19 @@ public:
 
     void setIntensity(float intensity);
 
-    void applyLight(Model& model);
+    struct ParameterPack
+    {
+        GLuint  type;
+        GLfloat position[3];
+        GLfloat color[4];
+        GLfloat intensity;
+        GLfloat direction[3];
+        GLfloat falloff[2];
+        GLfloat inner;
+        GLfloat outer;
+    };
+
+    ParameterPack getParameterPack();
 
     void draw() override;
 };

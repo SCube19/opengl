@@ -7,7 +7,9 @@ namespace Real
 {
 void Light::updateColorUniform()
 {
-    shader.setUniform(Uniform::COLOR, color.x, color.y, color.z, color.w);
+    if (shader == nullptr)
+        return;
+    shader->setUniform(Uniform::COLOR, color.x, color.y, color.z, color.w);
 }
 
 glm::vec4 Light::getColor()
@@ -26,38 +28,58 @@ void Light::setIntensity(float intensity)
     this->intensity = intensity;
 }
 
-void Light::applyLight(Model& model)
+Light::ParameterPack Light::getParameterPack()
 {
-    Shader& shader = model.getShader();
-    shader.setUniform(Uniform::LIGHT_TYPE, static_cast<unsigned int>(type));
-    shader.setUniform(Uniform::LIGHT_COLOR, color.x, color.y, color.z, color.w);
-    shader.setUniform(Uniform::LIGHT_POSITION, position.x, position.y, position.z);
-    shader.setUniform(Uniform::LIGHT_INTENSITY, intensity);
     if (type == Light::Type::DIRECTIONAL)
     {
         auto parameters = std::get<DirectionalParameters>(this->parameters);
-        shader.setUniform(Uniform::LIGHT_FALLOFF, parameters.falloff.x, parameters.falloff.y);
-
+        return ParameterPack{
+            type: static_cast<GLuint>(type),
+            position : {position.x, position.y, position.z},
+            color : {color.x, color.y, color.z, color.w},
+            intensity : intensity,
+            direction : {parameters.direction.x, parameters.direction.y, parameters.direction.z},
+            falloff : {.0f, .0f},
+            inner : .0f,
+            outer : .0f
+        };
     }
     else if (type == Light::Type::SPOTLIGHT)
     {
         auto parameters = std::get<SpotlightParameters>(this->parameters);
-        shader.setUniform(Uniform::LIGHT_DIRECTION, parameters.direction.x, parameters.direction.y, parameters.direction.z);
-        shader.setUniform(Uniform::LIGHT_OUTER, parameters.outer);
-        shader.setUniform(Uniform::LIGHT_INNER, parameters.inner);
-
+        return ParameterPack{
+            type: static_cast<GLuint>(type),
+            position : {position.x, position.y, position.z},
+            color : {color.x, color.y, color.z, color.w},
+            intensity : intensity,
+            direction : {parameters.direction.x, parameters.direction.y, parameters.direction.z},
+            falloff : {.0f, .0f},
+            inner : parameters.inner,
+            outer : parameters.outer
+        };
     }
-    else if (type == Light::Type::POINT)
+    else// if (type == Light::Type::POINT)
     {
         auto parameters = std::get<PointParameters>(this->parameters);
-        shader.setUniform(Uniform::LIGHT_DIRECTION, parameters.direction.x, parameters.direction.y, parameters.direction.z);
+        return ParameterPack{
+            type: static_cast<GLuint>(type),
+            position : {position.x, position.y, position.z},
+            color : {color.x, color.y, color.z, color.w},
+            intensity : intensity,
+            direction : {.0f, .0f, .0f},
+            falloff : {parameters.falloff.x, parameters.falloff.y},
+            inner : .0f,
+            outer : .0f
+        };
     }
 }
 
 void Light::draw()
 {
-    shader.use();
-    Real::Camera::getInstace().project(shader);
+    if (shader == nullptr)
+        return;
+    shader->use();
+    Real::Camera::getInstace().project(*shader);
     vao->draw();
 }
 }

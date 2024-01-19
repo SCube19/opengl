@@ -26,16 +26,16 @@ protected:
     glm::mat4 model;
 
     std::unique_ptr<VAO> vao;
-    Shader& shader;
+    std::unique_ptr<Shader> shader;
 
 public:
     using uniform = std::pair<std::string, std::any>;
 
-    WorldObject(const glm::vec3& position, std::unique_ptr<VAO>&& vao, Shader& shader)
+    WorldObject(const glm::vec3& position, std::unique_ptr<VAO>&& vao, std::unique_ptr<Shader>&& shader)
         :position(position),
         model(glm::mat4(1.0f)),
         vao(std::move(vao)),
-        shader(shader)
+        shader(std::move(shader))
     {
         this->translate(position);
         this->updateModelUniform();
@@ -46,7 +46,7 @@ public:
     void setPosition(const glm::vec3& position);
 
     Shader& getShader();
-    void setShader(const Shader& shader);
+    void setShader(std::unique_ptr<Shader>&& shader);
 
     void rotate(float degree, const glm::vec3& direction);
 

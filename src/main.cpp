@@ -23,6 +23,7 @@
 #include "light.h"
 #include "textureSet.h"
 #include "VAOFactory.h"
+#include "lightManager.h"
 
 int main()
 {
@@ -40,14 +41,20 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
     {
-        Real::Shader shader(
-            std::filesystem::absolute("shaders/default.vert"),
-            std::filesystem::absolute("shaders/default.frag"));
+        std::unique_ptr<Real::Shader> shader(
+            new Real::Shader(
+                std::filesystem::absolute("shaders/default.vert"),
+                std::filesystem::absolute("shaders/default.frag")));
 
-        Real::Shader lightShader(
-            std::filesystem::absolute("shaders/light.vert"),
-            std::filesystem::absolute("shaders/light.frag")
-        );
+        std::unique_ptr<Real::Shader> lightShader(
+            new Real::Shader(
+                std::filesystem::absolute("shaders/light.vert"),
+                std::filesystem::absolute("shaders/light.frag")));
+
+        std::unique_ptr<Real::Shader> lightShader2(
+            new Real::Shader(
+                std::filesystem::absolute("shaders/light.vert"),
+                std::filesystem::absolute("shaders/light.frag")));
 
         std::unique_ptr<Real::VAO> vao = Real::VAOFactory::get(Real::VAOFactory::Shape::D8);
 
@@ -58,34 +65,47 @@ int main()
 
         Real::TextureSet textures(std::move(popcat), std::move(specular));
 
-        Real::Light light(
+        std::unique_ptr<Real::Light> light(new Real::Light(
             Real::Light::Type::SPOTLIGHT,
-            glm::vec3(0.3f, 0.7f, 0.7f),
-            lightShader,
+            glm::vec3(.0f, 1.0f, .0f),
+            std::move(lightShader),
             glm::vec4(1.0f),
             1.0f,
             Real::Light::SpotlightParameters{
-                direction: glm::vec3(1.0f, 1.0f, 1.0f),
-                inner : 0.03f,
-                outer : 0.10f,
+                direction: glm::vec3(-1.5f, -1.0f, -1.0f),
+                inner : 0.98f,
+                outer : 0.88f,
             }
-        );
+        ));
 
-        Real::Model pyramid(glm::vec3(0.0f, 0.0f, 0.0f), std::move(vao), shader, textures);
+        std::unique_ptr<Real::Light> light2(new Real::Light(
+            Real::Light::Type::SPOTLIGHT,
+            glm::vec3(0.1f, -0.5f, 0.1f),
+            std::move(lightShader2),
+            glm::vec4(1.0f),
+            1.0f,
+            Real::Light::SpotlightParameters{
+                direction: glm::vec3(0.0f, 1.0f, 0.0f),
+                inner : 0.97f,
+                outer : 0.90f,
+            }
+        ));
 
-        light.applyLight(pyramid);
+        Real::Model pyramid(glm::vec3(0.0f, 0.0f, 0.0f), std::move(vao), std::move(shader), textures);
 
+        //light.applyLight(pyramid);
+        Real::LightManager::getInstance().addLight(std::move(light));
+        Real::LightManager::getInstance().addLight(std::move(light2));
+        Real::LightManager::getInstance().applyLight(pyramid.getShader());
         // Main while loop
         while (!glfwWindowShouldClose(&window))
         {
             glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            shader.use();
-
             pyramid.draw();
 
-            light.draw();
+            Real::LightManager::getInstance().draw();
 
             glfwSwapBuffers(&window);
 
