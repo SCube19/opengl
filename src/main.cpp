@@ -24,6 +24,9 @@
 #include "textureSet.h"
 #include "VAOFactory.h"
 #include "lightManager.h"
+#include "shaderFactory.h"
+
+using namespace Real;
 
 int main()
 {
@@ -41,41 +44,14 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
     {
-        std::unique_ptr<Real::Shader> shader(
-            new Real::Shader(
-                std::filesystem::absolute("shaders/default.vert"),
-                std::filesystem::absolute("shaders/default.frag")));
 
-        std::unique_ptr<Real::Shader> shader2(
-            new Real::Shader(
-                std::filesystem::absolute("shaders/default.vert"),
-                std::filesystem::absolute("shaders/default.frag")));
-
-        std::unique_ptr<Real::Shader> shader3(
-            new Real::Shader(
-                std::filesystem::absolute("shaders/default.vert"),
-                std::filesystem::absolute("shaders/default.frag")));
-
-        std::unique_ptr<Real::Shader> lightShader(
-            new Real::Shader(
-                std::filesystem::absolute("shaders/light.vert"),
-                std::filesystem::absolute("shaders/light.frag")));
-
-        std::unique_ptr<Real::Shader> lightShader2(
-            new Real::Shader(
-                std::filesystem::absolute("shaders/light.vert"),
-                std::filesystem::absolute("shaders/light.frag")));
-
-        std::unique_ptr<Real::Shader> lightShader3(
-            new Real::Shader(
-                std::filesystem::absolute("shaders/light.vert"),
-                std::filesystem::absolute("shaders/light.frag")));
-
-        std::unique_ptr<Real::Shader> lightShader4(
-            new Real::Shader(
-                std::filesystem::absolute("shaders/light.vert"),
-                std::filesystem::absolute("shaders/light.frag")));
-
+        std::unique_ptr<Real::Shader> shader(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::FLAT));
+        std::unique_ptr<Real::Shader> shader2(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::FLAT));
+        std::unique_ptr<Real::Shader> shader3(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::FLAT));
+        std::unique_ptr<Real::Shader> lightShader(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::NONE));
+        std::unique_ptr<Real::Shader> lightShader2(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::NONE));
+        std::unique_ptr<Real::Shader> lightShader3(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::NONE));
+        std::unique_ptr<Real::Shader> lightShader4(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::NONE));
 
         std::unique_ptr<Real::VAO> vao = Real::VAOFactory::get(Real::VAOFactory::Shape::D8);
         std::unique_ptr<Real::VAO> plane = Real::VAOFactory::get(Real::VAOFactory::Shape::PLANE);
@@ -104,7 +80,7 @@ int main()
             glm::vec3(0.0f, 1.0f, .0f),
             std::move(lightShader2),
             glm::vec4(1.0f),
-            5.5f,
+            10.5f,
             Real::Light::SpotlightParameters{
                 direction: glm::vec3(0.0f, -1.0f, 0.0f),
                 inner : 0.99f,
@@ -133,6 +109,17 @@ int main()
                 falloff: glm::vec2(3.0f, 0.7f)
             }
         ));
+
+        // std::unique_ptr<Real::Light> light5(new Real::Light(
+        //     Real::Light::Type::SPOTLIGHT,
+        //     glm::vec3(0.0f, 1.0f, .0f),
+        //     ShaderFactory::get(ShaderFactory::LightModel::NONE),
+        //     glm::vec4(1.0f),
+        //     7.0f,
+        //     Real::Light::PointParameters{
+        //         falloff: glm::vec2(3.0f, 0.7f)
+        //     }
+        // ));
 
         Real::Model pyramid(glm::vec3(0.0f, 0.0f, 0.0f), std::move(vao), std::move(shader), textures);
         Real::Model plank(glm::vec3(0.0f, 0.0f, 0.0f), std::move(plane), std::move(shader2), textures);
