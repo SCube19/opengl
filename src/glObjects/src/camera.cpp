@@ -118,7 +118,8 @@ void Camera::handleInput()
         float moveX = static_cast<float>((mouseX - (size.first / 2)) / size.first);
         float moveY = static_cast<float>((mouseY - (size.second / 2)) / size.second);
 
-        position += speed * (moveY * up - moveX * glm::normalize(glm::cross(orientation, up)));
+        position += speed * (moveY * glm::rotate(orientation, glm::radians(90.0f), upOrientation)
+            - moveX * glm::normalize(glm::cross(orientation, up)));
 
         glfwSetCursorPos(window, size.first / 2, size.second / 2);
     }
@@ -140,14 +141,15 @@ void Camera::handleInput()
         float rotX = sensitivity * static_cast<float>((mouseY - (size.second / 2)) / size.second);
         float rotY = sensitivity * static_cast<float>((mouseX - (size.first / 2)) / size.first);
 
-        glm::vec3 newOrientation = glm::rotate(orientation, glm::radians(-rotX), glm::normalize(glm::cross(orientation, up)));
+        glm::vec3 rightVector = glm::normalize(glm::cross(orientation, up));
+        glm::vec3 newOrientation = glm::rotate(orientation, glm::radians(-rotX), rightVector);
 
         if (std::abs(glm::angle(newOrientation, up) - glm::radians(90.0f)) <= glm::radians(85.0f))
             orientation = newOrientation;
 
 
         orientation = glm::rotate(orientation, glm::radians(-rotY), up);
-
+        upOrientation = glm::rotate(glm::rotate(upOrientation, glm::radians(-rotX), rightVector), glm::radians(-rotY), up);
         glfwSetCursorPos(window, size.first / 2, size.second / 2);
     }
 

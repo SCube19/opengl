@@ -9,11 +9,11 @@ namespace Real
 class TextureSet
 {
 private:
-    std::unique_ptr<Texture> texture;
-    std::unique_ptr<Texture> specular;
+    std::shared_ptr<Texture> texture;
+    std::shared_ptr<Texture> specular;
 
 public:
-    TextureSet(std::unique_ptr<Texture> texture, std::unique_ptr<Texture> specular);
+    TextureSet(const std::shared_ptr<Texture>& texture, const std::shared_ptr<Texture>& specular);
 
     // Texture& getTexture();
     // std::optional<Texture>& getSpecular();

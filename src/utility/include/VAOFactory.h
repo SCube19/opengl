@@ -13,7 +13,8 @@ public:
     enum class Shape
     {
         CUBE,
-        D8
+        D8,
+        PLANE
     };
     static std::unique_ptr<VAO> get(Shape shape);
 };

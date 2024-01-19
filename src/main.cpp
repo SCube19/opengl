@@ -46,6 +46,16 @@ int main()
                 std::filesystem::absolute("shaders/default.vert"),
                 std::filesystem::absolute("shaders/default.frag")));
 
+        std::unique_ptr<Real::Shader> shader2(
+            new Real::Shader(
+                std::filesystem::absolute("shaders/default.vert"),
+                std::filesystem::absolute("shaders/default.frag")));
+
+        std::unique_ptr<Real::Shader> shader3(
+            new Real::Shader(
+                std::filesystem::absolute("shaders/default.vert"),
+                std::filesystem::absolute("shaders/default.frag")));
+
         std::unique_ptr<Real::Shader> lightShader(
             new Real::Shader(
                 std::filesystem::absolute("shaders/light.vert"),
@@ -56,54 +66,99 @@ int main()
                 std::filesystem::absolute("shaders/light.vert"),
                 std::filesystem::absolute("shaders/light.frag")));
 
-        std::unique_ptr<Real::VAO> vao = Real::VAOFactory::get(Real::VAOFactory::Shape::D8);
+        std::unique_ptr<Real::Shader> lightShader3(
+            new Real::Shader(
+                std::filesystem::absolute("shaders/light.vert"),
+                std::filesystem::absolute("shaders/light.frag")));
 
-        std::unique_ptr<Real::Texture> popcat =
+        std::unique_ptr<Real::Shader> lightShader4(
+            new Real::Shader(
+                std::filesystem::absolute("shaders/light.vert"),
+                std::filesystem::absolute("shaders/light.frag")));
+
+
+        std::unique_ptr<Real::VAO> vao = Real::VAOFactory::get(Real::VAOFactory::Shape::D8);
+        std::unique_ptr<Real::VAO> plane = Real::VAOFactory::get(Real::VAOFactory::Shape::PLANE);
+        std::unique_ptr<Real::VAO> plane2 = Real::VAOFactory::get(Real::VAOFactory::Shape::PLANE);
+
+        std::shared_ptr<Real::Texture> popcat =
             std::make_unique<Real::Texture>(std::filesystem::absolute("textures/planks.png"), Real::Texture::Type::DIFFUSE, 0);
-        std::unique_ptr<Real::Texture> specular =
+        std::shared_ptr<Real::Texture> specular =
             std::make_unique<Real::Texture>(std::filesystem::absolute("textures/planksSpec.png"), Real::Texture::Type::SPECULAR, 1);
 
-        Real::TextureSet textures(std::move(popcat), std::move(specular));
+        Real::TextureSet textures(popcat, specular);
 
         std::unique_ptr<Real::Light> light(new Real::Light(
-            Real::Light::Type::SPOTLIGHT,
+            Real::Light::Type::DIRECTIONAL,
             glm::vec3(.0f, 1.0f, .0f),
             std::move(lightShader),
             glm::vec4(1.0f),
             1.0f,
-            Real::Light::SpotlightParameters{
-                direction: glm::vec3(-1.5f, -1.0f, -1.0f),
-                inner : 0.98f,
-                outer : 0.88f,
+            Real::Light::DirectionalParameters{
+                direction: glm::vec3(-1.5f, -1.0f, -1.0f)
             }
         ));
 
         std::unique_ptr<Real::Light> light2(new Real::Light(
             Real::Light::Type::SPOTLIGHT,
-            glm::vec3(0.1f, -0.5f, 0.1f),
+            glm::vec3(0.0f, 1.0f, .0f),
             std::move(lightShader2),
             glm::vec4(1.0f),
-            1.0f,
+            5.5f,
             Real::Light::SpotlightParameters{
-                direction: glm::vec3(0.0f, 1.0f, 0.0f),
-                inner : 0.97f,
-                outer : 0.90f,
+                direction: glm::vec3(0.0f, -1.0f, 0.0f),
+                inner : 0.99f,
+                outer : 0.97f,
+            }
+        ));
+
+        std::unique_ptr<Real::Light> light3(new Real::Light(
+            Real::Light::Type::POINT,
+            glm::vec3(-5.0f, 0.1f, 0.2f),
+            std::move(lightShader3),
+            glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
+            2.0f,
+            Real::Light::PointParameters{
+                falloff: glm::vec2(3.0f, 0.7f)
+            }
+        ));
+
+        std::unique_ptr<Real::Light> light4(new Real::Light(
+            Real::Light::Type::POINT,
+            glm::vec3(-0.5f, 0.2f, .0f),
+            std::move(lightShader4),
+            glm::vec4(1.0f),
+            7.0f,
+            Real::Light::PointParameters{
+                falloff: glm::vec2(3.0f, 0.7f)
             }
         ));
 
         Real::Model pyramid(glm::vec3(0.0f, 0.0f, 0.0f), std::move(vao), std::move(shader), textures);
-
-        //light.applyLight(pyramid);
+        Real::Model plank(glm::vec3(0.0f, 0.0f, 0.0f), std::move(plane), std::move(shader2), textures);
+        Real::Model plank2(glm::vec3(-2.0f, 0.0f, 0.0f), std::move(plane2), std::move(shader3), textures);
         Real::LightManager::getInstance().addLight(std::move(light));
         Real::LightManager::getInstance().addLight(std::move(light2));
+        Real::LightManager::getInstance().addLight(std::move(light3));
+        Real::LightManager::getInstance().addLight(std::move(light4));
+
+        // plank.rotate(90.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+        plank2.rotate(-90.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+        pyramid.rotate(203.0f, glm::vec3(1.0f, 1.0f, 0.0f));
+
         Real::LightManager::getInstance().applyLight(pyramid.getShader());
+        Real::LightManager::getInstance().applyLight(plank.getShader());
+        Real::LightManager::getInstance().applyLight(plank2.getShader());
         // Main while loop
         while (!glfwWindowShouldClose(&window))
         {
             glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
             pyramid.draw();
+            plank.draw();
+            plank2.draw();
 
             Real::LightManager::getInstance().draw();
 

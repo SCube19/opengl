@@ -64,7 +64,7 @@ vec4 directionalLight(vec3 lightPosition, vec4 lightColor, float lightIntensity,
 
 	// diffuse lighting
 	vec3 normal = normalize(Normal);
-	vec3 lightDir = normalize(lightDirection);
+	vec3 lightDir = -normalize(lightDirection);
 	float diffuse = max(dot(normal, lightDir), 0.0f);
 
 	// specular lighting
@@ -94,10 +94,10 @@ vec4 spotlightLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, v
 	vec3 reflectionDirection = reflect(-lightDir, normal);
 	float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16);
 	float specular = specAmount * specularLight;
-
+	
 	// calculates the intensity of the crntPos based on its angle to the center of the light cone
-	float angle = dot(lightDirection, -lightDir);
-	float inten = clamp(lightIntensity * (angle - outer) / (inner - outer), 0.0f, 1.0f);
+	float angle = dot(-lightDirection, lightDir);
+	float inten = clamp((angle - outer) / (inner - outer), 0.0f, 1.0f);
 
 	return (texture(real_texture0, texCoord) * (diffuse * inten + ambient) + texture(real_specular1, texCoord).r * specular * inten) * lightColor;
 }

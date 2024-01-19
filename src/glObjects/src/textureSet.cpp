@@ -3,9 +3,9 @@
 
 namespace Real
 {
-TextureSet::TextureSet(std::unique_ptr<Texture> texture, std::unique_ptr<Texture> specular)
-    : texture(std::move(texture)),
-    specular(std::move(specular))
+TextureSet::TextureSet(const std::shared_ptr<Texture>& texture, const std::shared_ptr<Texture>& specular)
+    : texture(texture),
+    specular(specular)
 {
 }
 
