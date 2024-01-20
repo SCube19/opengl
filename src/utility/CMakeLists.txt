@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.0.0)
 
 SET(UTILITY_SRC
     src/VAOFactory.cpp
+    src/shaderFactory.cpp
     )
 
 add_library(utility STATIC ${UTILITY_SRC})

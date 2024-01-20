@@ -51,6 +51,26 @@ std::unique_ptr<VAO> createPlane()
 
     return std::move(vao);
 }
+
+std::unique_ptr<VAO> createPyramid()
+{
+    std::unique_ptr<VAO> vao(new VAO());
+
+    vao->fromVectors(Shapes::PYRAMID.first, Shapes::PYRAMID.second, {
+        0, 3, GL_FLOAT, 11 * sizeof(float), (void*)0
+        });
+    vao->linkAttrib({
+        1, 3, GL_FLOAT, 11 * sizeof(float), (void*)(3 * sizeof(float))
+        });
+    vao->linkAttrib({
+        2, 2, GL_FLOAT, 11 * sizeof(float), (void*)(6 * sizeof(float))
+        });
+    vao->linkAttrib({
+        3, 3, GL_FLOAT, 11 * sizeof(float), (void*)(8 * sizeof(float))
+        });
+
+    return std::move(vao);
+}
 }
 
 std::unique_ptr<VAO> VAOFactory::get(VAOFactory::Shape shape)
@@ -63,6 +83,8 @@ std::unique_ptr<VAO> VAOFactory::get(VAOFactory::Shape shape)
         return createD8();
     case VAOFactory::Shape::PLANE:
         return createPlane();
+    case VAOFactory::Shape::PYRAMID:
+        return createPyramid();
     default:
         return createCube();
     }

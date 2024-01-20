@@ -118,8 +118,10 @@ void Camera::handleInput()
         float moveX = static_cast<float>((mouseX - (size.first / 2)) / size.first);
         float moveY = static_cast<float>((mouseY - (size.second / 2)) / size.second);
 
-        position += speed * (moveY * glm::rotate(orientation, glm::radians(90.0f), upOrientation)
-            - moveX * glm::normalize(glm::cross(orientation, up)));
+        glm::vec3 right = glm::normalize(glm::cross(orientation, up));
+
+        position += speed * (moveY * glm::rotate(orientation, glm::radians(90.0f), right)
+            - moveX * right);
 
         glfwSetCursorPos(window, size.first / 2, size.second / 2);
     }
