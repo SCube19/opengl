@@ -14,7 +14,8 @@ public:
     {
         CUBE,
         D8,
-        PLANE
+        PLANE,
+        PYRAMID
     };
     static std::unique_ptr<VAO> get(Shape shape);
 };

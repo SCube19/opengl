@@ -48,6 +48,13 @@ int main()
         std::unique_ptr<Real::Shader> shader(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::FLAT));
         std::unique_ptr<Real::Shader> shader2(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::FLAT));
         std::unique_ptr<Real::Shader> shader3(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::FLAT));
+        std::unique_ptr<Real::Shader> shaderFlat(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::FLAT));
+        std::unique_ptr<Real::Shader> shaderGourand(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::GOURAND));
+        std::unique_ptr<Real::Shader> shaderPhong(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::PHONG));
+
+        std::unique_ptr<Real::Shader> shaderCube(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::FLAT));
+
+
         std::unique_ptr<Real::Shader> lightShader(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::NONE));
         std::unique_ptr<Real::Shader> lightShader2(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::NONE));
         std::unique_ptr<Real::Shader> lightShader3(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::NONE));
@@ -56,6 +63,11 @@ int main()
         std::unique_ptr<Real::VAO> vao = Real::VAOFactory::get(Real::VAOFactory::Shape::D8);
         std::unique_ptr<Real::VAO> plane = Real::VAOFactory::get(Real::VAOFactory::Shape::PLANE);
         std::unique_ptr<Real::VAO> plane2 = Real::VAOFactory::get(Real::VAOFactory::Shape::PLANE);
+        std::unique_ptr<Real::VAO> planeFlat = Real::VAOFactory::get(Real::VAOFactory::Shape::PYRAMID);
+        std::unique_ptr<Real::VAO> planeGourand = Real::VAOFactory::get(Real::VAOFactory::Shape::PYRAMID);
+        std::unique_ptr<Real::VAO> planePhong = Real::VAOFactory::get(Real::VAOFactory::Shape::PYRAMID);
+
+        std::unique_ptr<Real::VAO> cubeVAO = Real::VAOFactory::get(Real::VAOFactory::Shape::CUBE);
 
         std::shared_ptr<Real::Texture> popcat =
             std::make_unique<Real::Texture>(std::filesystem::absolute("textures/planks.png"), Real::Texture::Type::DIFFUSE, 0);
@@ -64,52 +76,82 @@ int main()
 
         Real::TextureSet textures(popcat, specular);
 
-        std::unique_ptr<Real::Light> light(new Real::Light(
-            Real::Light::Type::DIRECTIONAL,
-            glm::vec3(.0f, 1.0f, .0f),
-            std::move(lightShader),
-            glm::vec4(1.0f),
-            1.0f,
-            Real::Light::DirectionalParameters{
-                direction: glm::vec3(-1.5f, -1.0f, -1.0f)
-            }
-        ));
-
-        std::unique_ptr<Real::Light> light2(new Real::Light(
+        ////////////////////
+        std::unique_ptr<Real::Light> lightTest(new Real::Light(
             Real::Light::Type::SPOTLIGHT,
-            glm::vec3(0.0f, 1.0f, .0f),
+            glm::vec3(0.0f, 0.0f, .0f),
             std::move(lightShader2),
             glm::vec4(1.0f),
-            10.5f,
+            2.0f,
             Real::Light::SpotlightParameters{
                 direction: glm::vec3(0.0f, -1.0f, 0.0f),
+                inner : 0.7f,
+                outer : 0.6f,
+            }
+        ));
+        std::unique_ptr<Real::Light> lightTest2(new Real::Light(
+            Real::Light::Type::SPOTLIGHT,
+            glm::vec3(0.0f, 0.0f, .0f),
+            std::move(lightShader3),
+            glm::vec4(1.0f),
+            2.0f,
+            Real::Light::SpotlightParameters{
+                direction: glm::vec3(0.0f, 1.0f, 0.0f),
+                inner : 0.99f,
+                outer : 0.97f,
+            }
+        ));
+        std::unique_ptr<Real::Light> lightTest3(new Real::Light(
+            Real::Light::Type::SPOTLIGHT,
+            glm::vec3(0.0f, 0.0f, .0f),
+            std::move(lightShader4),
+            glm::vec4(1.0f),
+            2.0f,
+            Real::Light::SpotlightParameters{
+                direction: glm::vec3(-1.0f, 0.0f, 0.0f),
                 inner : 0.99f,
                 outer : 0.97f,
             }
         ));
 
-        std::unique_ptr<Real::Light> light3(new Real::Light(
-            Real::Light::Type::POINT,
-            glm::vec3(-5.0f, 0.1f, 0.2f),
-            std::move(lightShader3),
-            glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
-            2.0f,
-            Real::Light::PointParameters{
-                falloff: glm::vec2(3.0f, 0.7f)
-            }
-        ));
 
-        std::unique_ptr<Real::Light> light4(new Real::Light(
-            Real::Light::Type::POINT,
-            glm::vec3(-0.5f, 0.2f, .0f),
-            std::move(lightShader4),
-            glm::vec4(1.0f),
-            7.0f,
-            Real::Light::PointParameters{
-                falloff: glm::vec2(3.0f, 0.7f)
-            }
-        ));
+        // std::unique_ptr<Real::Light> lightTest(new Real::Light(
+        //     Real::Light::Type::POINT,
+        //     glm::vec3(0.0f, 0.0f, .0f),
+        //     std::move(lightShader2),
+        //     glm::vec4(1.0f),
+        //     7.0f,
+        //     Real::Light::PointParameters{
+        //         falloff: glm::vec2(2.0f, 0.7f)
+        //     }
+        // ));
+        // std::unique_ptr<Real::Light> lightTest(new Real::Light(
+        //     Real::Light::Type::DIRECTIONAL,
+        //     glm::vec3(0.0f, 0.0f, .0f),
+        //     std::move(lightShader2),
+        //     glm::vec4(1.0f),
+        //     3.0f,
+        //     Real::Light::DirectionalParameters{
+        //         direction: glm::vec3(1.0f, -1.0f, 0.0f)
+        //     }
+        // ));
+        Real::Model plank(glm::vec3(0.0f, -1.0f, 0.0f), std::move(planeFlat), std::move(shaderFlat), textures);
+        Real::Model plank2(glm::vec3(0.0f, 1.0f, 0.0f), std::move(planeGourand), std::move(shaderGourand), textures);
+        Real::Model plank3(glm::vec3(-1.0f, 0.0f, 0.0f), std::move(planePhong), std::move(shaderPhong), textures);
 
+        Real::Model cube(glm::vec3(0.0f, -1.0f, 0.0f), std::move(cubeVAO), std::move(shaderCube), textures);
+
+        //plank.rotate(35.0f, glm::vec3(1.0f, 0.5f, 1.2f));
+        plank2.rotate(180.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+        plank3.rotate(-90.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+
+        LightManager::getInstance().addLight(std::move(lightTest));
+        LightManager::getInstance().addLight(std::move(lightTest2));
+        LightManager::getInstance().addLight(std::move(lightTest3));
+        LightManager::getInstance().applyLight(plank.getShader());
+        LightManager::getInstance().applyLight(plank2.getShader());
+        LightManager::getInstance().applyLight(plank3.getShader());
+        LightManager::getInstance().applyLight(cube.getShader());
         // std::unique_ptr<Real::Light> light5(new Real::Light(
         //     Real::Light::Type::SPOTLIGHT,
         //     glm::vec3(0.0f, 1.0f, .0f),
@@ -121,31 +163,41 @@ int main()
         //     }
         // ));
 
-        Real::Model pyramid(glm::vec3(0.0f, 0.0f, 0.0f), std::move(vao), std::move(shader), textures);
-        Real::Model plank(glm::vec3(0.0f, 0.0f, 0.0f), std::move(plane), std::move(shader2), textures);
-        Real::Model plank2(glm::vec3(-2.0f, 0.0f, 0.0f), std::move(plane2), std::move(shader3), textures);
-        Real::LightManager::getInstance().addLight(std::move(light));
-        Real::LightManager::getInstance().addLight(std::move(light2));
-        Real::LightManager::getInstance().addLight(std::move(light3));
-        Real::LightManager::getInstance().addLight(std::move(light4));
+        // Real::Model pyramid(glm::vec3(0.0f, 0.0f, 0.0f), std::move(vao), std::move(shader), textures);
+        // Real::Model plank(glm::vec3(0.0f, -1.0f, 0.0f), std::move(plane), std::move(shader2), textures);
+        // Real::Model plank2(glm::vec3(-2.0f, 0.0f, 0.0f), std::move(plane2), std::move(shader3), textures);
+        // // Real::LightManager::getInstance().addLight(std::move(light));
+        // Real::LightManager::getInstance().addLight(std::move(light2));
+        // // Real::LightManager::getInstance().addLight(std::move(light3));
+        // // Real::LightManager::getInstance().addLight(std::move(light4));
 
-        // plank.rotate(90.0f, glm::vec3(0.0f, 0.0f, 1.0f));
-        plank2.rotate(-90.0f, glm::vec3(0.0f, 0.0f, 1.0f));
-        pyramid.rotate(203.0f, glm::vec3(1.0f, 1.0f, 0.0f));
+        // // plank.rotate(90.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+        // plank2.rotate(-90.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+        // pyramid.rotate(203.0f, glm::vec3(1.0f, 1.0f, 0.0f));
 
-        Real::LightManager::getInstance().applyLight(pyramid.getShader());
-        Real::LightManager::getInstance().applyLight(plank.getShader());
-        Real::LightManager::getInstance().applyLight(plank2.getShader());
+        // Real::LightManager::getInstance().applyLight(pyramid.getShader());
+        // Real::LightManager::getInstance().applyLight(plank.getShader());
+        // Real::LightManager::getInstance().applyLight(plank2.getShader());
+
+
+        double prevTime = glfwGetTime();
+
         // Main while loop
         while (!glfwWindowShouldClose(&window))
         {
             glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-            pyramid.draw();
+            double currTime = glfwGetTime();
+            if (currTime - prevTime > 1 / 60)
+            {
+                plank.rotate(1.0f, glm::vec3(1.0f, 0.5f, -1.0f));
+                plank2.rotate(1.0f, glm::vec3(1.0f, 0.5f, -1.0f));
+                plank3.rotate(1.0f, glm::vec3(1.0f, 0.5f, -1.0f));
+            }
             plank.draw();
             plank2.draw();
+            plank3.draw();
 
             Real::LightManager::getInstance().draw();
 

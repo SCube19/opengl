@@ -17,7 +17,7 @@ out vec2 texCoord;
 // Outputs the normal for the Fragment Shader
 flat out vec3 Normal;
 // Outputs the current position for the Fragment Shader
-out vec3 crntPos;
+flat out vec3 crntPos;
 
 // Imports the camera matrix from the main function
 uniform mat4 real_camera;
@@ -32,7 +32,7 @@ void main()
 	// calculates current position
 	crntPos = vec3(real_model * vec4(aPos, 1.0f));
 	// Outputs the positions/coordinates of all vertices
-	gl_Position = real_camera * vec4(crntPos, 1.0);
+	gl_Position = real_camera * vec4(crntPos, 1.0f);
 
 	// Assigns the colors from the Vertex Data to "color"
 	color = aColor;

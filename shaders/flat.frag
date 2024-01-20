@@ -11,7 +11,7 @@ in vec2 texCoord;
 // Imports the normal from the Vertex Shader
 flat in vec3 Normal;
 // Imports the current position from the Vertex Shader
-in vec3 crntPos;
+flat in vec3 crntPos;
 
 // Gets the Texture Unit from the main function
 uniform sampler2D real_texture0;
