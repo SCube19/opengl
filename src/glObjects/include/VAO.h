@@ -10,10 +10,18 @@
 
 namespace Real
 {
-
 class VAO : public GLObject
 {
 private:
+    struct Config
+    {
+        GLuint layout;
+        GLuint numberOfComponents;
+        GLuint type;
+        GLsizeiptr stride;
+        void* offset;
+    };
+
     GLuint id;
     bool isBound;
 
@@ -22,19 +30,12 @@ private:
 
     int nVertices;
 
-public:
-    struct Config
-    {
-        GLuint layout;
-        GLuint numberOfComponents;
-        GLenum type;
-        GLsizeiptr stride;
-        void* offset;
-    };
+    void linkAttrib(const Config& config);
 
-    VAO(const std::vector<GLfloat>& vertices,
+
+public:
+    VAO(const std::vector<Vertex>& vertices,
         const std::vector<GLuint>& indices,
-        const Config& config,
         int drawType = GL_STATIC_DRAW);
     VAO();
 
@@ -42,16 +43,6 @@ public:
 
     void bind();
     void unbind();
-
-    void linkVBO(std::unique_ptr<VBO>&& vbo, const Config& config);
-    void linkEBO(std::unique_ptr<EBO>&& ebo);
-    void linkAttrib(const Config& config);
-
-    void fromVectors(
-        const std::vector<GLfloat>& vertices,
-        const std::vector<GLuint>& indices,
-        const Config& config,
-        int drawType = GL_STATIC_DRAW);
 
     VBO& getVBO();
     EBO& getEBO();

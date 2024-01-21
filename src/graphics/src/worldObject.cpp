@@ -1,6 +1,6 @@
 #include "worldObject.h"
 
-#include <uniforms/uniforms.h>
+#include "uniforms.h"
 
 #include "camera.h"
 

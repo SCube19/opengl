@@ -5,6 +5,7 @@ SET(GRAPHICS_SRC
     src/model.cpp
     src/worldObject.cpp
     src/lightManager.cpp
+    src/mesh.cpp
     )
 
 add_library(graphics STATIC ${GRAPHICS_SRC})

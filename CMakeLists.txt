@@ -13,7 +13,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(CPack)
 
-include_directories(inc src/glObjects/include src/utility/include src/graphics/include)
+include_directories(inc src/glObjects/include src/utility/include src/graphics/include src/static)
 
 add_subdirectory(src)
 add_subdirectory(src/glObjects)

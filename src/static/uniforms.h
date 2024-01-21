@@ -1,3 +1,5 @@
+#pragma once
+
 namespace Real
 {
 namespace Uniform

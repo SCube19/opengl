@@ -1,7 +1,7 @@
 #include "light.h"
 #include "camera.h"
 
-#include <uniforms/uniforms.h>
+#include "uniforms.h"
 
 namespace Real
 {
@@ -78,7 +78,7 @@ void Light::draw()
 {
     if (shader == nullptr)
         return;
-    shader->use();
+    //shader->use();
     Real::Camera::getInstace().project(*shader);
     vao->draw();
 }

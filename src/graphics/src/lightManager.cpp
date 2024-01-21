@@ -1,6 +1,6 @@
 #include "lightManager.h"
 
-#include <uniforms/uniforms.h>
+#include "uniforms.h"
 
 namespace Real
 {

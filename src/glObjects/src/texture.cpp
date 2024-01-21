@@ -1,7 +1,5 @@
 #include "texture.h"
 
-#include <uniforms/uniforms.h>
-
 namespace Real
 {
 Texture::Texture(const std::string& image, Texture::Type texType, GLuint slot)

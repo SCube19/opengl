@@ -47,8 +47,8 @@ private:
     void updateColorUniform();
 
 public:
-    Light(Type type, const glm::vec3& position, std::unique_ptr<Shader>&& shader, const glm::vec4& color, float intensity, Parameters parameters)
-        : WorldObject(position, VAOFactory::get(VAOFactory::Shape::CUBE), std::move(shader)),
+    Light(Type type, const glm::vec3& position, const std::shared_ptr<Shader>& shader, const glm::vec4& color, float intensity, Parameters parameters)
+        : WorldObject(position, VAOFactory::get(VAOFactory::Shape::SMALL_CUBE), std::move(shader)),
         type(type),
         color(color),
         intensity(intensity),

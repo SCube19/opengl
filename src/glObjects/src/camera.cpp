@@ -1,6 +1,6 @@
 #include "camera.h"
 
-#include <uniforms/uniforms.h>
+#include "uniforms.h"
 
 #include <functional>
 

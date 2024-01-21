@@ -25,17 +25,31 @@ protected:
     glm::vec3 position;
     glm::mat4 model;
 
-    std::unique_ptr<VAO> vao;
-    std::unique_ptr<Shader> shader;
+    std::shared_ptr<VAO> vao;
+    Shader& shader;
 
 public:
     using uniform = std::pair<std::string, std::any>;
 
-    WorldObject(const glm::vec3& position, std::unique_ptr<VAO>&& vao, std::unique_ptr<Shader>&& shader)
+    WorldObject(const glm::vec3& position, const std::shared_ptr<VAO> vao, const std::shared_ptr<Shader> shader)
         :position(position),
         model(glm::mat4(1.0f)),
-        vao(std::move(vao)),
-        shader(std::move(shader))
+        vao(vao),
+        shader(*shader)
+    {
+        this->translate(position);
+        this->updateModelUniform();
+        this->updatePositionUniform();
+    }
+
+    WorldObject(const glm::vec3& position,
+        const std::vector<Vertex>& vertices,
+        const std::vector<GLuint>& indices,
+        const std::shared_ptr<Shader> shader)
+        :position(position),
+        model(glm::mat4(1.0f)),
+        vao(new VAO(vertices, indices)),
+        shader(*shader)
     {
         this->translate(position);
         this->updateModelUniform();

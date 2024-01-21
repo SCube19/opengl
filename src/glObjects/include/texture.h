@@ -8,6 +8,7 @@
 
 #include "glObject.h"
 #include "shader.h"
+#include "uniforms.h"
 
 namespace Real
 {
