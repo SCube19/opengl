@@ -8,13 +8,19 @@
 namespace Real
 {
 
-VAO::VAO(const std::vector<GLfloat>& vertices,
+VAO::VAO(const std::vector<Vertex>& vertices,
     const std::vector<GLuint>& indices,
-    const Config& config,
     int drawType) : VAO()
-
 {
-    this->fromVectors(vertices, indices, config, drawType);
+    this->bind();
+    this->vbo = std::make_unique<VBO>(vertices, drawType);
+    this->ebo = std::make_unique<EBO>(indices, drawType);
+
+    linkAttrib({ 0, 3, GL_FLOAT, sizeof(Vertex), (void*)(0) });
+    linkAttrib({ 1, 4, GL_FLOAT, sizeof(Vertex), (void*)(3 * sizeof(float)) });
+    linkAttrib({ 2, 2, GL_FLOAT, sizeof(Vertex), (void*)(7 * sizeof(float)) });
+    linkAttrib({ 3, 3, GL_FLOAT, sizeof(Vertex), (void*)(9 * sizeof(float)) });
+    nVertices = ebo->getNumberOfIndices();
 }
 
 
@@ -47,11 +53,9 @@ void VAO::unbind()
         ebo->unbind();
 }
 
-void VAO::linkVBO(std::unique_ptr<VBO>&& vbo, const Config& config)
+void VAO::linkAttrib(const Config& config)
 {
     bind();
-
-    this->vbo = std::move(vbo);
 
     this->vbo->bind();
     glVertexAttribPointer(
@@ -64,31 +68,6 @@ void VAO::linkVBO(std::unique_ptr<VBO>&& vbo, const Config& config)
     glEnableVertexAttribArray(config.layout);
 
     unbind();
-}
-
-void VAO::linkEBO(std::unique_ptr<EBO>&& ebo)
-{
-    ebo = std::move(ebo);
-    nVertices = ebo->getNumberOfIndices();
-}
-
-void VAO::linkAttrib(const Config& config)
-{
-    linkVBO(std::move(vbo), config);
-}
-
-void VAO::fromVectors(
-    const std::vector<GLfloat>& vertices,
-    const std::vector<GLuint>& indices,
-    const Config& config,
-    int drawType)
-{
-    this->bind();
-    std::unique_ptr<VBO> vbo = std::make_unique<VBO>(vertices, drawType);
-    std::unique_ptr<EBO> ebo = std::make_unique<EBO>(indices, drawType);
-
-    linkVBO(std::move(vbo), config);
-    linkEBO(std::move(ebo));
 }
 
 VBO& VAO::getVBO()

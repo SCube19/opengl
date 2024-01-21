@@ -1,15 +1,13 @@
 #include "light.h"
 #include "camera.h"
 
-#include <uniforms/uniforms.h>
+#include "uniforms.h"
 
 namespace Real
 {
-void Light::updateColorUniform()
+void Light::updateColorUniform(Shader& shader)
 {
-    if (shader == nullptr)
-        return;
-    shader->setUniform(Uniform::COLOR, color.x, color.y, color.z, color.w);
+    shader.setUniform(Uniform::COLOR, color.x, color.y, color.z, color.w);
 }
 
 glm::vec4 Light::getColor()
@@ -20,12 +18,17 @@ glm::vec4 Light::getColor()
 void Light::setColor(const glm::vec4& color)
 {
     this->color = color;
-    this->updateColorUniform();
 }
 
 void Light::setIntensity(float intensity)
 {
     this->intensity = intensity;
+}
+
+void Light::translate(const glm::vec3& translate)
+{
+    position += translate;
+    WorldObject::translate(translate);
 }
 
 Light::ParameterPack Light::getParameterPack()
@@ -74,12 +77,12 @@ Light::ParameterPack Light::getParameterPack()
     }
 }
 
-void Light::draw()
+void Light::draw(Shader& shader)
 {
-    if (shader == nullptr)
-        return;
-    shader->use();
-    Real::Camera::getInstace().project(*shader);
+    shader.use();
+    Real::Camera::getInstace().project(shader);
+    updateUniforms(shader);
+
     vao->draw();
 }
 }

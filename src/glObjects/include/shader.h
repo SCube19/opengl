@@ -16,7 +16,6 @@ private:
     {
         shader.use();
         return glGetUniformLocation(shader.getProgram(), uniformName.c_str());
-
     }
 
 public:

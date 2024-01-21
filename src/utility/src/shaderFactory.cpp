@@ -6,36 +6,36 @@ namespace Real
 {
 namespace
 {
-std::unique_ptr<Shader> createFlat()
+std::shared_ptr<Shader> createFlat()
 {
-    return std::unique_ptr<Shader>(new Shader(
+    return std::shared_ptr<Shader>(new Shader(
         std::filesystem::absolute("shaders/flat.vert"),
         std::filesystem::absolute("shaders/flat.frag")));
 }
 
-std::unique_ptr<Shader> createGourand()
+std::shared_ptr<Shader> createGourand()
 {
-    return std::unique_ptr<Shader>(new Shader(
+    return std::shared_ptr<Shader>(new Shader(
         std::filesystem::absolute("shaders/gourand.vert"),
         std::filesystem::absolute("shaders/gourand.frag")));
 }
 
-std::unique_ptr<Shader> createPhong()
+std::shared_ptr<Shader> createPhong()
 {
-    return std::unique_ptr<Shader>(new Shader(
+    return std::shared_ptr<Shader>(new Shader(
         std::filesystem::absolute("shaders/phong.vert"),
         std::filesystem::absolute("shaders/phong.frag")));
 }
 
-std::unique_ptr<Shader> createDefault()
+std::shared_ptr<Shader> createDefault()
 {
-    return std::unique_ptr<Shader>(new Shader(
+    return std::shared_ptr<Shader>(new Shader(
         std::filesystem::absolute("shaders/default.vert"),
         std::filesystem::absolute("shaders/default.frag")));
 }
 }
 
-std::unique_ptr<Shader> ShaderFactory::get(ShaderFactory::LightModel model)
+std::shared_ptr<Shader> ShaderFactory::get(ShaderFactory::LightModel model)
 {
     switch (model)
     {

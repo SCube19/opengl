@@ -17,7 +17,7 @@ public:
         PHONG,
         NONE
     };
-    static std::unique_ptr<Shader> get(LightModel model);
+    static std::shared_ptr<Shader> get(LightModel model);
 
 };
 } // namespace Real

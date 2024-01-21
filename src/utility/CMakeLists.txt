@@ -7,7 +7,4 @@ SET(UTILITY_SRC
 
 add_library(utility STATIC ${UTILITY_SRC})
 
-add_library(shapes STATIC ${PROJECT_SOURCE_DIR}/include/predefined/shapes.cpp)
-
-target_include_directories(utility PUBLIC ${PROJECT_SOURCE_DIR}/include include ${PROJECT_SOURCE_DIR}/src/glObjects/include)
-target_link_libraries(utility PUBLIC shapes)
+target_include_directories(utility PUBLIC ${PROJECT_SOURCE_DIR}/include include ${PROJECT_SOURCE_DIR}/src/glObjects/include ${PROJECT_SOURCE_DIR}/src/static)

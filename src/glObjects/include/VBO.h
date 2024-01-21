@@ -4,9 +4,12 @@
 #include <vector>
 
 #include "glObject.h"
+#include "vertex.h"
 
 namespace Real
 {
+
+
 class VBO : public GLObject
 {
 private:
@@ -14,7 +17,7 @@ private:
     bool isBound;
 
 public:
-    VBO(const std::vector<GLfloat>& vertices, int drawType);
+    VBO(const std::vector<Vertex>& vertices, int drawType);
     ~VBO();
 
     void bind();

@@ -12,46 +12,45 @@
 
 #include "shader.h"
 #include "VAO.h"
+#include "drawable.h"
 
 namespace Real
 {
-class WorldObject
+class WorldObject : public Drawable
 {
 private:
-    void updateModelUniform();
-    void updatePositionUniform();
+    void updateModelUniform(Shader& shader);
+    void updatePositionUniform(Shader& shader);
 
 protected:
-    glm::vec3 position;
     glm::mat4 model;
 
-    std::unique_ptr<VAO> vao;
-    std::unique_ptr<Shader> shader;
+    std::shared_ptr<VAO> vao;
 
 public:
-    using uniform = std::pair<std::string, std::any>;
-
-    WorldObject(const glm::vec3& position, std::unique_ptr<VAO>&& vao, std::unique_ptr<Shader>&& shader)
-        :position(position),
-        model(glm::mat4(1.0f)),
-        vao(std::move(vao)),
-        shader(std::move(shader))
+    WorldObject(const glm::vec3& position, const std::shared_ptr<VAO> vao)
+        :model(glm::mat4(1.0f)),
+        vao(vao)
     {
         this->translate(position);
-        this->updateModelUniform();
-        this->updatePositionUniform();
     }
 
-    glm::vec3 getPosition();
-    void setPosition(const glm::vec3& position);
+    WorldObject(const glm::vec3& position,
+        const std::vector<Vertex>& vertices,
+        const std::vector<GLuint>& indices)
+        :
+        model(glm::mat4(1.0f)),
+        vao(new VAO(vertices, indices))
+    {
+        this->translate(position);
+    }
 
-    Shader& getShader();
-    void setShader(std::unique_ptr<Shader>&& shader);
+    virtual void rotate(float degree, const glm::vec3& direction) override;
 
-    void rotate(float degree, const glm::vec3& direction);
+    virtual void translate(const glm::vec3& translate) override;
 
-    void translate(const glm::vec3& translate);
+    virtual void scale(float scale) override;
 
-    virtual void draw() = 0;
+    void updateUniforms(Shader& shader) override;
 };
 }

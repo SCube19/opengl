@@ -3,13 +3,13 @@
 
 namespace Real
 {
-VBO::VBO(const std::vector<GLfloat>& vertices, int drawType) : isBound(true)
+VBO::VBO(const std::vector<Vertex>& vertices, int drawType) : isBound(true)
 {
     glGenBuffers(1, &id);
 
     glBindBuffer(GL_ARRAY_BUFFER, id);
 
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), drawType);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), drawType);
 }
 
 VBO::~VBO()

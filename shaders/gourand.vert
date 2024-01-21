@@ -3,7 +3,7 @@
 // Positions/Coordinates
 layout (location = 0) in vec3 aPos;
 // Colors
-layout (location = 1) in vec3 aColor;
+layout (location = 1) in vec4 aColor;
 // Texture Coordinates
 layout (location = 2) in vec2 aTex;
 // Normals (not necessarily normalized)
@@ -11,9 +11,11 @@ layout (location = 3) in vec3 aNormal;
 
 
 // Outputs the color for the Fragment Shader
-out vec4 color[2];
+out vec4 shading[2];
 // Outputs the texture coordinates to the Fragment Shader
 out vec2 texCoord;
+
+out vec4 color;
 
 // Imports the camera matrix from the main function
 uniform mat4 real_camera;
@@ -121,6 +123,8 @@ void main()
 	// Assigns the colors from the Vertex Data to "color"
 	vec4 result[2] = vec4[](vec4(0.0f), vec4(0.0f));
 	// Assigns the texture coordinates from the Vertex Data to "texCoord"
+	color = aColor;
+
 	texCoord = aTex;
 	// Assigns the normal from the Vertex Data to "Normal"
 	mat3 normalMatrix = mat3(transpose(inverse((real_model))));
@@ -166,5 +170,5 @@ void main()
 				break;
 		}
 	}
-	color = result;
+	shading = result;
 }

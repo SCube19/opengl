@@ -1,6 +1,7 @@
 #include "lightManager.h"
 
-#include <uniforms/uniforms.h>
+#include "uniforms.h"
+#include "shaderFactory.h"
 
 namespace Real
 {
@@ -59,7 +60,8 @@ void LightManager::applyLight(Shader& shader)
 
 void LightManager::draw()
 {
+    std::shared_ptr<Shader> shader = ShaderFactory::get(ShaderFactory::LightModel::NONE);
     for (auto& light : lights)
-        light->draw();
+        light->draw(*shader);
 }
 }
