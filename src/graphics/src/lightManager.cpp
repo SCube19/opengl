@@ -58,6 +58,19 @@ void LightManager::applyLight(Shader& shader)
     shader.setUniformVector<GLfloat>(glUniform2fv, Uniform::LIGHT_FALLOFF, 2 * MAX_LIGHTS, parameters.falloff);
 }
 
+void LightManager::translateLight(int index, const glm::vec3& translate)
+{
+    if (lights.size() > index)
+        lights[index]->translate(translate);
+}
+
+void LightManager::rotateLight(int index, float angle, const glm::vec3& direction)
+{
+    if (lights.size() > index)
+        lights[index]->rotate(angle, direction);
+}
+
+
 void LightManager::draw()
 {
     std::shared_ptr<Shader> shader = ShaderFactory::get(ShaderFactory::LightModel::NONE);

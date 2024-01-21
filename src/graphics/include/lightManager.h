@@ -37,6 +37,10 @@ public:
 
     void removeLight(int index);
 
+    void translateLight(int index, const glm::vec3& translate);
+
+    void rotateLight(int index, float angle, const glm::vec3& direction);
+
     void draw();
 };
 }

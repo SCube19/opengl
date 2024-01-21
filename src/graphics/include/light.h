@@ -72,6 +72,7 @@ public:
 
     void translate(const glm::vec3& translate) override;
 
+    void rotate(float degree, const glm::vec3& direction) override;
     struct ParameterPack
     {
         GLuint  type;

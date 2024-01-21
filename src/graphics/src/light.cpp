@@ -31,6 +31,18 @@ void Light::translate(const glm::vec3& translate)
     WorldObject::translate(translate);
 }
 
+void Light::rotate(float degree, const glm::vec3& direction)
+{
+    if (auto* val = std::get_if<DirectionalParameters>(&this->parameters))
+    {
+        val->direction = glm::rotate(val->direction, degree, direction);
+    }
+    else if (auto* val = std::get_if<SpotlightParameters>(&this->parameters))
+    {
+        val->direction = glm::rotate(val->direction, degree, direction);
+    }
+}
+
 Light::ParameterPack Light::getParameterPack()
 {
     if (type == Light::Type::DIRECTIONAL)
