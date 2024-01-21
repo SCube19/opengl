@@ -17,9 +17,9 @@ VAO::VAO(const std::vector<Vertex>& vertices,
     this->ebo = std::make_unique<EBO>(indices, drawType);
 
     linkAttrib({ 0, 3, GL_FLOAT, sizeof(Vertex), (void*)(0) });
-    linkAttrib({ 1, 3, GL_FLOAT, sizeof(Vertex), (void*)(3 * sizeof(float)) });
-    linkAttrib({ 2, 2, GL_FLOAT, sizeof(Vertex), (void*)(6 * sizeof(float)) });
-    linkAttrib({ 3, 3, GL_FLOAT, sizeof(Vertex), (void*)(8 * sizeof(float)) });
+    linkAttrib({ 1, 4, GL_FLOAT, sizeof(Vertex), (void*)(3 * sizeof(float)) });
+    linkAttrib({ 2, 2, GL_FLOAT, sizeof(Vertex), (void*)(7 * sizeof(float)) });
+    linkAttrib({ 3, 3, GL_FLOAT, sizeof(Vertex), (void*)(9 * sizeof(float)) });
     nVertices = ebo->getNumberOfIndices();
 }
 

@@ -5,7 +5,7 @@ out vec4 FragColor;
 
 
 // Imports the color from the Vertex Shader
-flat in vec3 color;
+flat in vec4 color;
 // Imports the texture coordinates from the Vertex Shader
 in vec2 texCoord;
 // Imports the normal from the Vertex Shader
@@ -14,9 +14,11 @@ flat in vec3 Normal;
 flat in vec3 crntPos;
 
 // Gets the Texture Unit from the main function
+uniform int real_texturePresent = 1;
+
 uniform sampler2D real_texture0;
 
-uniform sampler2D real_specular1;
+uniform sampler2D real_specular0;
 
 uniform vec3 real_cameraPosition;
 
@@ -47,7 +49,17 @@ vec4 pointLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec2 
 	vec3 lightDirection = normalize(lightVec);
 	float diffuse = max(dot(normal, lightDirection), 0.0f);
 
-	return (texture(real_texture0, texCoord) * (diffuse * inten + ambient)) * lightColor;
+	// specular lighting
+	float specularLight = 0.50f;
+	vec3 viewDirection = normalize(real_cameraPosition - crntPos);
+	vec3 reflectionDirection = reflect(-lightDirection, normal);
+	float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16);
+	float specular = specAmount * specularLight;
+
+	vec4 tex = real_texturePresent * texture(real_texture0, texCoord) - (real_texturePresent - 1) * color;
+	vec4 specularTex = real_texturePresent * texture(real_specular0, texCoord).r - (real_texturePresent - 1) * color;
+	
+	return (tex * (diffuse * inten + ambient) +  specularTex * specular * inten) * lightColor;
 }
 
 vec4 directionalLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec3 lightDirection)
@@ -60,7 +72,17 @@ vec4 directionalLight(vec3 lightPosition, vec4 lightColor, float lightIntensity,
 	vec3 lightDir = -normalize(lightDirection);
 	float diffuse = max(dot(normal, lightDir), 0.0f);
 
-	return (texture(real_texture0, texCoord) * (diffuse * lightIntensity + ambient)) * lightColor;
+	// specular lighting
+	float specularLight = 0.50f;
+	vec3 viewDirection = normalize(real_cameraPosition - crntPos);
+	vec3 reflectionDirection = reflect(-lightDir, normal);
+	float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16);
+	float specular = specAmount * specularLight;
+
+	vec4 tex = real_texturePresent * texture(real_texture0, texCoord) - (real_texturePresent - 1) * color;
+	vec4 specularTex = real_texturePresent * texture(real_specular0, texCoord).r - (real_texturePresent - 1) * color;
+
+	return (tex * (diffuse * lightIntensity + ambient) + specularTex * specular * lightIntensity) * lightColor;
 }
 
 
@@ -73,12 +95,22 @@ vec4 spotlightLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, v
 	vec3 normal = normalize(Normal);
 	vec3 lightDir = normalize(lightPosition - crntPos);
 	float diffuse = max(dot(normal, lightDir), 0.0f);
+
+	// specular lighting
+	float specularLight = 0.50f;
+	vec3 viewDirection = normalize(real_cameraPosition - crntPos);
+	vec3 reflectionDirection = reflect(-lightDir, normal);
+	float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16);
+	float specular = specAmount * specularLight;
 	
 	// calculates the intensity of the crntPos based on its angle to the center of the light cone
 	float angle = dot(-lightDirection, lightDir);
 	float inten = clamp((angle - outer) / (inner - outer), 0.0f, 1.0f);
 
-	return (texture(real_texture0, texCoord) * (diffuse * inten + ambient)) * lightColor;
+	vec4 tex = real_texturePresent * texture(real_texture0, texCoord) - (real_texturePresent - 1) * color;
+	vec4 specularTex = real_texturePresent * texture(real_specular0, texCoord).r - (real_texturePresent - 1) * color;
+
+	return (tex * (diffuse * inten + ambient) + specularTex * specular * inten) * lightColor;
 }
 
 void main()

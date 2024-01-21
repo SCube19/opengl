@@ -38,24 +38,27 @@ public:
 private:
     Type type;
 
+    glm::vec3 position;
+
     glm::vec4 color;
 
     float intensity;
 
     Parameters parameters;
 
-    void updateColorUniform();
+    void updateColorUniform(Shader& shader);
 
 protected:
-    void _updateUniforms() override
+    void _updateUniforms(Shader& shader) override
     {
-        updateColorUniform();
+        updateColorUniform(shader);
     }
 
 public:
-    Light(Type type, const glm::vec3& position, const std::shared_ptr<Shader>& shader, const glm::vec4& color, float intensity, Parameters parameters)
-        : WorldObject(position, VAOFactory::get(VAOFactory::Shape::SMALL_CUBE), std::move(shader)),
+    Light(Type type, const glm::vec3& position, const glm::vec4& color, float intensity, Parameters parameters)
+        : WorldObject(position, VAOFactory::get(VAOFactory::Shape::SMALL_CUBE)),
         type(type),
+        position(position),
         color(color),
         intensity(intensity),
         parameters(parameters)
@@ -66,6 +69,8 @@ public:
     void setColor(const glm::vec4& texture);
 
     void setIntensity(float intensity);
+
+    void translate(const glm::vec3& translate) override;
 
     struct ParameterPack
     {
@@ -81,6 +86,6 @@ public:
 
     ParameterPack getParameterPack();
 
-    void draw() override;
+    void draw(Shader& shader) override;
 };
 }

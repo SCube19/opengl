@@ -24,6 +24,7 @@ private:
     GLuint id;
     Type type;
     GLuint slot;
+    std::string path;
 
 public:
     Texture(const std::string& image, Type texType, GLuint slot);
@@ -33,6 +34,18 @@ public:
     void bind();
     void unbind();
 
-    void bindShader(Shader& shader);
+    Type getType();
+
+    void bindShader(Shader& shader, int index);
+
+    friend inline bool operator==(const Texture& lhs, const Texture& rhs)
+    {
+        return lhs.path == rhs.path;
+    }
+
+    friend bool operator<(const Texture& lhs, const Texture& rhs)
+    {
+        return lhs.path < rhs.path;
+    }
 };
 }

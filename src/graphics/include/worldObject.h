@@ -12,64 +12,45 @@
 
 #include "shader.h"
 #include "VAO.h"
+#include "drawable.h"
 
 namespace Real
 {
-class WorldObject
+class WorldObject : public Drawable
 {
 private:
-    void updateModelUniform();
-    void updatePositionUniform();
+    void updateModelUniform(Shader& shader);
+    void updatePositionUniform(Shader& shader);
 
 protected:
-    glm::vec3 position;
     glm::mat4 model;
 
     std::shared_ptr<VAO> vao;
-    Shader& shader;
-
-    virtual void _updateUniforms() = 0;
 
 public:
-    using uniform = std::pair<std::string, std::any>;
-
-    WorldObject(const glm::vec3& position, const std::shared_ptr<VAO> vao, const std::shared_ptr<Shader> shader)
-        :position(position),
-        model(glm::mat4(1.0f)),
-        vao(vao),
-        shader(*shader)
+    WorldObject(const glm::vec3& position, const std::shared_ptr<VAO> vao)
+        :model(glm::mat4(1.0f)),
+        vao(vao)
     {
         this->translate(position);
-        this->updateModelUniform();
-        this->updatePositionUniform();
     }
 
     WorldObject(const glm::vec3& position,
         const std::vector<Vertex>& vertices,
-        const std::vector<GLuint>& indices,
-        const std::shared_ptr<Shader> shader)
-        :position(position),
+        const std::vector<GLuint>& indices)
+        :
         model(glm::mat4(1.0f)),
-        vao(new VAO(vertices, indices)),
-        shader(*shader)
+        vao(new VAO(vertices, indices))
     {
         this->translate(position);
-        this->updateModelUniform();
-        this->updatePositionUniform();
     }
 
-    glm::vec3 getPosition();
-    void setPosition(const glm::vec3& position);
+    virtual void rotate(float degree, const glm::vec3& direction) override;
 
-    Shader& getShader();
-    void setShader(const std::shared_ptr<Shader>& shader);
+    virtual void translate(const glm::vec3& translate) override;
 
-    void rotate(float degree, const glm::vec3& direction);
+    virtual void scale(float scale) override;
 
-    void translate(const glm::vec3& translate);
-
-    void updateUniforms();
-
-    virtual void draw() = 0;
+    void updateUniforms(Shader& shader) override;
 };
 }

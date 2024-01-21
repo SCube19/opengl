@@ -62,5 +62,7 @@ constexpr static const char* LIGHT_DIRECTION = "real_lightDirection";
 constexpr static const char* LIGHT_INNER = "real_lightInner";
 constexpr static const char* LIGHT_OUTER = "real_lightOuter";
 
+constexpr static const char* TEXTURE_PRESENT = "real_texturePresent";
+
 }
 }

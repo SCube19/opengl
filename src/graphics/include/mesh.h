@@ -16,18 +16,17 @@ class Mesh : public WorldObject
 private:
     std::vector<std::shared_ptr<Texture>> textures;
 
-    void updateTexturesUniform();
-    void updateTexturesUniform(int index);
+    void updateTexturesUniform(Shader& shader);
 
-    void _updateUniforms() override
+    void _updateUniforms(Shader& shader) override
     {
-        updateTexturesUniform();
+        updateTexturesUniform(shader);
     }
 
 public:
-    Mesh(const glm::vec3& position, const std::shared_ptr<VAO>& vao, const std::shared_ptr<Shader> shader,
+    Mesh(const glm::vec3& position, const std::shared_ptr<VAO>& vao,
         std::vector<std::shared_ptr<Texture>> textures)
-        : WorldObject(position, std::move(vao), std::move(shader)),
+        : WorldObject(position, std::move(vao)),
         textures(textures)
     {
     }
@@ -35,13 +34,12 @@ public:
     Mesh(const glm::vec3& position,
         const std::vector<Vertex>& vertices,
         const std::vector<GLuint>& indices,
-        const std::shared_ptr<Shader>& shader,
         std::vector<std::shared_ptr<Texture>> textures)
-        : WorldObject(position, vertices, indices, std::move(shader)),
+        : WorldObject(position, vertices, indices),
         textures(textures)
     {
     }
 
-    void draw() override;
+    void draw(Shader& shader) override;
 };
 }

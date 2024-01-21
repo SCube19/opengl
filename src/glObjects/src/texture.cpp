@@ -4,6 +4,7 @@ namespace Real
 {
 Texture::Texture(const std::string& image, Texture::Type texType, GLuint slot)
 {
+    path = image;
     stbi_set_flip_vertically_on_load(true);
 
     type = texType;
@@ -36,6 +37,11 @@ Texture::~Texture()
     glDeleteTextures(1, &id);
 }
 
+Texture::Type Texture::getType()
+{
+    return type;
+}
+
 void Texture::bind()
 {
     glActiveTexture(GL_TEXTURE0 + this->slot);
@@ -47,9 +53,9 @@ void Texture::unbind()
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Texture::bindShader(Shader& shader)
+void Texture::bindShader(Shader& shader, int index)
 {
     shader.setUniform<GLint>(type == Texture::Type::DIFFUSE ?
-        Uniform::TEXTURES[this->slot] : Uniform::SPECULAR[this->slot], this->slot);
+        Uniform::TEXTURES[index] : Uniform::SPECULAR[index], this->slot);
 }
 }

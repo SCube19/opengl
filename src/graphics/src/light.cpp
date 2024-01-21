@@ -5,7 +5,7 @@
 
 namespace Real
 {
-void Light::updateColorUniform()
+void Light::updateColorUniform(Shader& shader)
 {
     shader.setUniform(Uniform::COLOR, color.x, color.y, color.z, color.w);
 }
@@ -23,6 +23,12 @@ void Light::setColor(const glm::vec4& color)
 void Light::setIntensity(float intensity)
 {
     this->intensity = intensity;
+}
+
+void Light::translate(const glm::vec3& translate)
+{
+    position += translate;
+    WorldObject::translate(translate);
 }
 
 Light::ParameterPack Light::getParameterPack()
@@ -71,11 +77,11 @@ Light::ParameterPack Light::getParameterPack()
     }
 }
 
-void Light::draw()
+void Light::draw(Shader& shader)
 {
     shader.use();
     Real::Camera::getInstace().project(shader);
-    updateUniforms();
+    updateUniforms(shader);
 
     vao->draw();
 }

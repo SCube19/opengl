@@ -61,30 +61,30 @@ public:
 
     inline static const model_3d D8 = {
     {
-        Vertex{Vertex::Position(-0.5f, 0.0f,  0.5f),   Vertex::Color(0.83f, 0.70f, 0.44f),  Vertex::UV(0.0f, 0.0f),      Vertex::Normal(-1.0f, 1.0f,  0.0f)}, // Left Side
-        Vertex{Vertex::Position(-0.5f, 0.0f, -0.5f),   Vertex::Color(0.83f, 0.70f, 0.44f),  Vertex::UV(5.0f, 0.0f),      Vertex::Normal(-1.0f, 1.0f,  0.0f)}, // Left Side
-        Vertex{Vertex::Position(0.0f, 0.5f,  0.0f),    Vertex::Color(0.92f, 0.86f, 0.76f),  Vertex::UV(2.5f, 5.0f),      Vertex::Normal(-1.0f, 1.0f,  0.0f)}, // Left Side
-        Vertex{Vertex::Position(-0.5f, 0.0f, -0.5f),   Vertex::Color(0.83f, 0.70f, 0.44f),  Vertex::UV(5.0f, 0.0f),      Vertex::Normal(0.0f, 1.0f, -1.0f)}, // Non-facing side
-        Vertex{Vertex::Position(0.5f, 0.0f, -0.5f),    Vertex::Color(0.83f, 0.70f, 0.44f),  Vertex::UV(0.0f, 0.0f),      Vertex::Normal(0.0f, 1.0f, -1.0f)}, // Non-facing side
-        Vertex{Vertex::Position(0.0f, 0.5f,  0.0f),    Vertex::Color(0.92f, 0.86f, 0.76f),  Vertex::UV(2.5f, 5.0f),      Vertex::Normal(0.0f, 1.0f, -1.0f)}, // Non-facing side
-        Vertex{Vertex::Position(0.5f, 0.0f, -0.5f),    Vertex::Color(0.83f, 0.70f, 0.44f),  Vertex::UV(0.0f, 0.0f),      Vertex::Normal(1.0f, 1.0f,  0.0f)}, // Right side
-        Vertex{Vertex::Position(0.5f, 0.0f,  0.5f),    Vertex::Color(0.83f, 0.70f, 0.44f),  Vertex::UV(5.0f, 0.0f),      Vertex::Normal(1.0f, 1.0f,  0.0f)}, // Right side
-        Vertex{Vertex::Position(0.0f, 0.5f,  0.0f),    Vertex::Color(0.92f, 0.86f, 0.76f),  Vertex::UV(2.5f, 5.0f),      Vertex::Normal(1.0f, 1.0f,  0.0f)}, // Right side
-        Vertex{Vertex::Position(0.5f, 0.0f,  0.5f),    Vertex::Color(0.83f, 0.70f, 0.44f),  Vertex::UV(5.0f, 0.0f),      Vertex::Normal(0.0f, 1.0f,  1.0f)}, // Facing side
-        Vertex{Vertex::Position(-0.5f, 0.0f,  0.5f),   Vertex::Color(0.83f, 0.70f, 0.44f),  Vertex::UV(0.0f, 0.0f),      Vertex::Normal(0.0f, 1.0f,  1.0f)}, // Facing side
-        Vertex{Vertex::Position(0.0f, 0.5f,  0.0f),    Vertex::Color(0.92f, 0.86f, 0.76f),  Vertex::UV(2.5f, 5.0f),      Vertex::Normal(0.0f, 1.0f,  1.0f)},  // Facing side
-        Vertex{Vertex::Position(-0.5f, 0.0f,  0.5f),   Vertex::Color(0.83f, 0.70f, 0.44f),  Vertex::UV(0.0f, 0.0f),      Vertex::Normal(-1.0f, -1.0f,  0.0f)}, // Left Side Down
-        Vertex{Vertex::Position(-0.5f, 0.0f, -0.5f),   Vertex::Color(0.83f, 0.70f, 0.44f),  Vertex::UV(5.0f, 0.0f),      Vertex::Normal(-1.0f, -1.0f,  0.0f)}, // Left Side Down
-        Vertex{Vertex::Position(0.0f, -0.5f, 0.0f),    Vertex::Color(0.92f, 0.86f, 0.76f),  Vertex::UV(2.5f, 5.0f),      Vertex::Normal(-1.0f, -1.0f,  0.0f)}, // Left Side Down
-        Vertex{Vertex::Position(-0.5f, 0.0f, -0.5f),   Vertex::Color(0.83f, 0.70f, 0.44f),  Vertex::UV(5.0f, 0.0f),      Vertex::Normal(0.0f, -1.0f, -1.0f)}, // Non-facing side Down
-        Vertex{Vertex::Position(0.5f, 0.0f, -0.5f),    Vertex::Color(0.83f, 0.70f, 0.44f),  Vertex::UV(0.0f, 0.0f),      Vertex::Normal(0.0f, -1.0f, -1.0f)}, // Non-facing side Down
-        Vertex{Vertex::Position(0.0f, -0.5f, 0.0f),    Vertex::Color(0.92f, 0.86f, 0.76f),  Vertex::UV(2.5f, 5.0f),      Vertex::Normal(0.0f, -1.0f, -1.0f)}, // Non-facing side Down
-        Vertex{Vertex::Position(0.5f, 0.0f, -0.5f),    Vertex::Color(0.83f, 0.70f, 0.44f),  Vertex::UV(0.0f, 0.0f),      Vertex::Normal(1.0f, -1.0f,  0.0f)}, // Right side Down
-        Vertex{Vertex::Position(0.5f, 0.0f,  0.5f),    Vertex::Color(0.83f, 0.70f, 0.44f),  Vertex::UV(5.0f, 0.0f),      Vertex::Normal(1.0f, -1.0f,  0.0f)}, // Right side Down
-        Vertex{Vertex::Position(0.0f, -0.5f, 0.0f),    Vertex::Color(0.92f, 0.86f, 0.76f),  Vertex::UV(2.5f, 5.0f),      Vertex::Normal(1.0f, -1.0f,  0.0f)}, // Right side Down
-        Vertex{Vertex::Position(0.5f, 0.0f,  0.5f),    Vertex::Color(0.83f, 0.70f, 0.44f),  Vertex::UV(5.0f, 0.0f),      Vertex::Normal(0.0f, -1.0f,  1.0f)}, // Facing side Down
-        Vertex{Vertex::Position(-0.5f, 0.0f,  0.5f),   Vertex::Color(0.83f, 0.70f, 0.44f),  Vertex::UV(0.0f, 0.0f),      Vertex::Normal(0.0f, -1.0f,  1.0f)}, // Facing side Down
-        Vertex{Vertex::Position(0.0f, -0.5f, 0.0f),    Vertex::Color(0.92f, 0.86f, 0.76f),  Vertex::UV(2.5f, 5.0f),      Vertex::Normal(0.0f, -1.0f,  1.0f)}  // Facing side Down
+        Vertex{Vertex::Position(-0.5f, 0.0f,  0.5f),   Vertex::Color(1.0f),  Vertex::UV(0.0f, 0.0f),      Vertex::Normal(-1.0f, 1.0f,  0.0f)}, // Left Side
+        Vertex{Vertex::Position(-0.5f, 0.0f, -0.5f),   Vertex::Color(1.0f),  Vertex::UV(5.0f, 0.0f),      Vertex::Normal(-1.0f, 1.0f,  0.0f)}, // Left Side
+        Vertex{Vertex::Position(0.0f, 0.5f,  0.0f),    Vertex::Color(1.0f),  Vertex::UV(2.5f, 5.0f),      Vertex::Normal(-1.0f, 1.0f,  0.0f)}, // Left Side
+        Vertex{Vertex::Position(-0.5f, 0.0f, -0.5f),   Vertex::Color(1.0f),  Vertex::UV(5.0f, 0.0f),      Vertex::Normal(0.0f, 1.0f, -1.0f)}, // Non-facing side
+        Vertex{Vertex::Position(0.5f, 0.0f, -0.5f),    Vertex::Color(1.0f),  Vertex::UV(0.0f, 0.0f),      Vertex::Normal(0.0f, 1.0f, -1.0f)}, // Non-facing side
+        Vertex{Vertex::Position(0.0f, 0.5f,  0.0f),    Vertex::Color(1.0f),  Vertex::UV(2.5f, 5.0f),      Vertex::Normal(0.0f, 1.0f, -1.0f)}, // Non-facing side
+        Vertex{Vertex::Position(0.5f, 0.0f, -0.5f),    Vertex::Color(1.0f),  Vertex::UV(0.0f, 0.0f),      Vertex::Normal(1.0f, 1.0f,  0.0f)}, // Right side
+        Vertex{Vertex::Position(0.5f, 0.0f,  0.5f),    Vertex::Color(1.0f),  Vertex::UV(5.0f, 0.0f),      Vertex::Normal(1.0f, 1.0f,  0.0f)}, // Right side
+        Vertex{Vertex::Position(0.0f, 0.5f,  0.0f),    Vertex::Color(1.0f),  Vertex::UV(2.5f, 5.0f),      Vertex::Normal(1.0f, 1.0f,  0.0f)}, // Right side
+        Vertex{Vertex::Position(0.5f, 0.0f,  0.5f),    Vertex::Color(1.0f),  Vertex::UV(5.0f, 0.0f),      Vertex::Normal(0.0f, 1.0f,  1.0f)}, // Facing side
+        Vertex{Vertex::Position(-0.5f, 0.0f,  0.5f),   Vertex::Color(1.0f),  Vertex::UV(0.0f, 0.0f),      Vertex::Normal(0.0f, 1.0f,  1.0f)}, // Facing side
+        Vertex{Vertex::Position(0.0f, 0.5f,  0.0f),    Vertex::Color(1.0f),  Vertex::UV(2.5f, 5.0f),      Vertex::Normal(0.0f, 1.0f,  1.0f)},  // Facing side
+        Vertex{Vertex::Position(-0.5f, 0.0f,  0.5f),   Vertex::Color(1.0f),  Vertex::UV(0.0f, 0.0f),      Vertex::Normal(-1.0f, -1.0f,  0.0f)}, // Left Side Down
+        Vertex{Vertex::Position(-0.5f, 0.0f, -0.5f),   Vertex::Color(1.0f),  Vertex::UV(5.0f, 0.0f),      Vertex::Normal(-1.0f, -1.0f,  0.0f)}, // Left Side Down
+        Vertex{Vertex::Position(0.0f, -0.5f, 0.0f),    Vertex::Color(1.0f),  Vertex::UV(2.5f, 5.0f),      Vertex::Normal(-1.0f, -1.0f,  0.0f)}, // Left Side Down
+        Vertex{Vertex::Position(-0.5f, 0.0f, -0.5f),   Vertex::Color(1.0f),  Vertex::UV(5.0f, 0.0f),      Vertex::Normal(0.0f, -1.0f, -1.0f)}, // Non-facing side Down
+        Vertex{Vertex::Position(0.5f, 0.0f, -0.5f),    Vertex::Color(1.0f),  Vertex::UV(0.0f, 0.0f),      Vertex::Normal(0.0f, -1.0f, -1.0f)}, // Non-facing side Down
+        Vertex{Vertex::Position(0.0f, -0.5f, 0.0f),    Vertex::Color(1.0f),  Vertex::UV(2.5f, 5.0f),      Vertex::Normal(0.0f, -1.0f, -1.0f)}, // Non-facing side Down
+        Vertex{Vertex::Position(0.5f, 0.0f, -0.5f),    Vertex::Color(1.0f),  Vertex::UV(0.0f, 0.0f),      Vertex::Normal(1.0f, -1.0f,  0.0f)}, // Right side Down
+        Vertex{Vertex::Position(0.5f, 0.0f,  0.5f),    Vertex::Color(1.0f),  Vertex::UV(5.0f, 0.0f),      Vertex::Normal(1.0f, -1.0f,  0.0f)}, // Right side Down
+        Vertex{Vertex::Position(0.0f, -0.5f, 0.0f),    Vertex::Color(1.0f),  Vertex::UV(2.5f, 5.0f),      Vertex::Normal(1.0f, -1.0f,  0.0f)}, // Right side Down
+        Vertex{Vertex::Position(0.5f, 0.0f,  0.5f),    Vertex::Color(1.0f),  Vertex::UV(5.0f, 0.0f),      Vertex::Normal(0.0f, -1.0f,  1.0f)}, // Facing side Down
+        Vertex{Vertex::Position(-0.5f, 0.0f,  0.5f),   Vertex::Color(1.0f),  Vertex::UV(0.0f, 0.0f),      Vertex::Normal(0.0f, -1.0f,  1.0f)}, // Facing side Down
+        Vertex{Vertex::Position(0.0f, -0.5f, 0.0f),    Vertex::Color(1.0f),  Vertex::UV(2.5f, 5.0f),      Vertex::Normal(0.0f, -1.0f,  1.0f)}  // Facing side Down
     },
     {
         0, 1, 2, // Left side
@@ -100,10 +100,10 @@ public:
 
     inline static const model_3d PLANE = {
     {
-        Vertex{Vertex::Position(-1.0f, 0.0f,  1.0f),	Vertex::Color(0.0f, 0.0f, 0.0f),		Vertex::UV(0.0f, 0.0f),		Vertex::Normal(0.0f, 1.0f, 0.0f)},
-        Vertex{Vertex::Position(-1.0f, 0.0f, -1.0f),	Vertex::Color(0.0f, 0.0f, 0.0f),		Vertex::UV(0.0f, 1.0f),		Vertex::Normal(0.0f, 1.0f, 0.0f)},
-        Vertex{Vertex::Position(1.0f, 0.0f, -1.0f),		Vertex::Color(0.0f, 0.0f, 0.0f),		Vertex::UV(1.0f, 1.0f),		Vertex::Normal(0.0f, 1.0f, 0.0f)},
-        Vertex{Vertex::Position(1.0f, 0.0f,  1.0f),		Vertex::Color(0.0f, 0.0f, 0.0f),		Vertex::UV(1.0f, 0.0f),		Vertex::Normal(0.0f, 1.0f, 0.0f)}
+        Vertex{Vertex::Position(-1.0f, 0.0f,  1.0f),	Vertex::Color(1.0f),		Vertex::UV(0.0f, 0.0f),		Vertex::Normal(0.0f, 1.0f, 0.0f)},
+        Vertex{Vertex::Position(-1.0f, 0.0f, -1.0f),	Vertex::Color(1.0f),		Vertex::UV(0.0f, 1.0f),		Vertex::Normal(0.0f, 1.0f, 0.0f)},
+        Vertex{Vertex::Position(1.0f, 0.0f, -1.0f),		Vertex::Color(1.0f),		Vertex::UV(1.0f, 1.0f),		Vertex::Normal(0.0f, 1.0f, 0.0f)},
+        Vertex{Vertex::Position(1.0f, 0.0f,  1.0f),		Vertex::Color(1.0f),		Vertex::UV(1.0f, 0.0f),		Vertex::Normal(0.0f, 1.0f, 0.0f)}
     },
     {
         0, 1, 2,
@@ -112,22 +112,22 @@ public:
     };
 
     inline static const model_3d PYRAMID = { {
-        Vertex{Vertex::Position(-0.5f, 0.0f,  0.5f),    Vertex::Color(0.83f, 0.70f, 0.44f),  Vertex::UV(0.0f, 0.0f),     Vertex::Normal(0.0f, -1.0f, 0.0f)}, // Bottom side
-        Vertex{Vertex::Position(-0.5f, 0.0f, -0.5f),    Vertex::Color(0.83f, 0.70f, 0.44f),	 Vertex::UV(0.0f, 5.0f),     Vertex::Normal(0.0f, -1.0f, 0.0f)}, // Bottom side
-        Vertex{Vertex::Position(0.5f, 0.0f, -0.5f),    Vertex::Color(0.83f, 0.70f, 0.44f),	 Vertex::UV(5.0f, 5.0f),     Vertex::Normal(0.0f, -1.0f, 0.0f)}, // Bottom side
-        Vertex{Vertex::Position(0.5f, 0.0f,  0.5f),    Vertex::Color(0.83f, 0.70f, 0.44f),	 Vertex::UV(5.0f, 0.0f),     Vertex::Normal(0.0f, -1.0f, 0.0f)}, // Bottom side
-        Vertex{Vertex::Position(-0.5f, 0.0f,  0.5f),    Vertex::Color(0.83f, 0.70f, 0.44f),  Vertex::UV(0.0f, 0.0f),     Vertex::Normal(-0.8f, 0.5f,  0.0f)}, // Left Side
-        Vertex{Vertex::Position(-0.5f, 0.0f, -0.5f),    Vertex::Color(0.83f, 0.70f, 0.44f),	 Vertex::UV(5.0f, 0.0f),     Vertex::Normal(-0.8f, 0.5f,  0.0f)}, // Left Side
-        Vertex{Vertex::Position(0.0f, 0.8f,  0.0f),    Vertex::Color(0.92f, 0.86f, 0.76f),	 Vertex::UV(2.5f, 5.0f),     Vertex::Normal(-0.8f, 0.5f,  0.0f)}, // Left Side
-        Vertex{Vertex::Position(-0.5f, 0.0f, -0.5f),    Vertex::Color(0.83f, 0.70f, 0.44f),	 Vertex::UV(5.0f, 0.0f),     Vertex::Normal(0.0f, 0.5f, -0.8f)}, // Non-facing side
-        Vertex{Vertex::Position(0.5f, 0.0f, -0.5f),    Vertex::Color(0.83f, 0.70f, 0.44f),	 Vertex::UV(0.0f, 0.0f),     Vertex::Normal(0.0f, 0.5f, -0.8f)}, // Non-facing side
-        Vertex{Vertex::Position(0.0f, 0.8f,  0.0f),    Vertex::Color(0.92f, 0.86f, 0.76f),	 Vertex::UV(2.5f, 5.0f),     Vertex::Normal(0.0f, 0.5f, -0.8f)}, // Non-facing side
-        Vertex{Vertex::Position(0.5f, 0.0f, -0.5f),    Vertex::Color(0.83f, 0.70f, 0.44f),	 Vertex::UV(0.0f, 0.0f),     Vertex::Normal(0.8f, 0.5f,  0.0f)}, // Right side
-        Vertex{Vertex::Position(0.5f, 0.0f,  0.5f),    Vertex::Color(0.83f, 0.70f, 0.44f),	 Vertex::UV(5.0f, 0.0f),     Vertex::Normal(0.8f, 0.5f,  0.0f)}, // Right side
-        Vertex{Vertex::Position(0.0f, 0.8f,  0.0f),    Vertex::Color(0.92f, 0.86f, 0.76f),	 Vertex::UV(2.5f, 5.0f),     Vertex::Normal(0.8f, 0.5f,  0.0f)}, // Right side
-        Vertex{Vertex::Position(0.5f, 0.0f,  0.5f),    Vertex::Color(0.83f, 0.70f, 0.44f),	 Vertex::UV(5.0f, 0.0f),     Vertex::Normal(0.0f, 0.5f,  0.8f)}, // Facing side
-        Vertex{Vertex::Position(-0.5f, 0.0f,  0.5f),    Vertex::Color(0.83f, 0.70f, 0.44f),  Vertex::UV(0.0f, 0.0f),     Vertex::Normal(0.0f, 0.5f,  0.8f)}, // Facing side
-        Vertex{Vertex::Position(0.0f, 0.8f,  0.0f),    Vertex::Color(0.92f, 0.86f, 0.76f),	 Vertex::UV(2.5f, 5.0f),     Vertex::Normal(0.0f, 0.5f,  0.8f)}  // Facing side
+        Vertex{Vertex::Position(-0.5f, 0.0f,  0.5f),    Vertex::Color(1.0f),  Vertex::UV(0.0f, 0.0f),     Vertex::Normal(0.0f, -1.0f, 0.0f)}, // Bottom side
+        Vertex{Vertex::Position(-0.5f, 0.0f, -0.5f),    Vertex::Color(1.0f),	 Vertex::UV(0.0f, 5.0f),     Vertex::Normal(0.0f, -1.0f, 0.0f)}, // Bottom side
+        Vertex{Vertex::Position(0.5f, 0.0f, -0.5f),    Vertex::Color(1.0f),	 Vertex::UV(5.0f, 5.0f),     Vertex::Normal(0.0f, -1.0f, 0.0f)}, // Bottom side
+        Vertex{Vertex::Position(0.5f, 0.0f,  0.5f),    Vertex::Color(1.0f),	 Vertex::UV(5.0f, 0.0f),     Vertex::Normal(0.0f, -1.0f, 0.0f)}, // Bottom side
+        Vertex{Vertex::Position(-0.5f, 0.0f,  0.5f),    Vertex::Color(1.0f),  Vertex::UV(0.0f, 0.0f),     Vertex::Normal(-0.8f, 0.5f,  0.0f)}, // Left Side
+        Vertex{Vertex::Position(-0.5f, 0.0f, -0.5f),    Vertex::Color(1.0f),	 Vertex::UV(5.0f, 0.0f),     Vertex::Normal(-0.8f, 0.5f,  0.0f)}, // Left Side
+        Vertex{Vertex::Position(0.0f, 0.8f,  0.0f),    Vertex::Color(1.0f),	 Vertex::UV(2.5f, 5.0f),     Vertex::Normal(-0.8f, 0.5f,  0.0f)}, // Left Side
+        Vertex{Vertex::Position(-0.5f, 0.0f, -0.5f),    Vertex::Color(1.0f),	 Vertex::UV(5.0f, 0.0f),     Vertex::Normal(0.0f, 0.5f, -0.8f)}, // Non-facing side
+        Vertex{Vertex::Position(0.5f, 0.0f, -0.5f),    Vertex::Color(1.0f),	 Vertex::UV(0.0f, 0.0f),     Vertex::Normal(0.0f, 0.5f, -0.8f)}, // Non-facing side
+        Vertex{Vertex::Position(0.0f, 0.8f,  0.0f),    Vertex::Color(1.0f),	 Vertex::UV(2.5f, 5.0f),     Vertex::Normal(0.0f, 0.5f, -0.8f)}, // Non-facing side
+        Vertex{Vertex::Position(0.5f, 0.0f, -0.5f),    Vertex::Color(1.0f),	 Vertex::UV(0.0f, 0.0f),     Vertex::Normal(0.8f, 0.5f,  0.0f)}, // Right side
+        Vertex{Vertex::Position(0.5f, 0.0f,  0.5f),    Vertex::Color(1.0f),	 Vertex::UV(5.0f, 0.0f),     Vertex::Normal(0.8f, 0.5f,  0.0f)}, // Right side
+        Vertex{Vertex::Position(0.0f, 0.8f,  0.0f),    Vertex::Color(1.0f),	 Vertex::UV(2.5f, 5.0f),     Vertex::Normal(0.8f, 0.5f,  0.0f)}, // Right side
+        Vertex{Vertex::Position(0.5f, 0.0f,  0.5f),    Vertex::Color(1.0f),	 Vertex::UV(5.0f, 0.0f),     Vertex::Normal(0.0f, 0.5f,  0.8f)}, // Facing side
+        Vertex{Vertex::Position(-0.5f, 0.0f,  0.5f),    Vertex::Color(1.0f),  Vertex::UV(0.0f, 0.0f),     Vertex::Normal(0.0f, 0.5f,  0.8f)}, // Facing side
+        Vertex{Vertex::Position(0.0f, 0.8f,  0.0f),    Vertex::Color(1.0f),	 Vertex::UV(2.5f, 5.0f),     Vertex::Normal(0.0f, 0.5f,  0.8f)}  // Facing side
     },
     {
         0, 1, 2, // Bottom side

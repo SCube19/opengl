@@ -22,11 +22,11 @@ add_subdirectory(src/graphics)
 
 add_executable(real_engine src/main.cpp)
 
-target_link_libraries(real_engine glad stb glfw glObjects utility graphics)
+target_link_libraries(real_engine glad stb glfw glObjects utility graphics assimp)
 
 file(COPY shaders DESTINATION .)
 file(COPY textures DESTINATION .)
-
+file(COPY models DESTINATION .)
 
 find_package(OpenGL REQUIRED)
 
