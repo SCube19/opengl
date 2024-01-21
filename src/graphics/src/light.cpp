@@ -7,9 +7,7 @@ namespace Real
 {
 void Light::updateColorUniform()
 {
-    if (shader == nullptr)
-        return;
-    shader->setUniform(Uniform::COLOR, color.x, color.y, color.z, color.w);
+    shader.setUniform(Uniform::COLOR, color.x, color.y, color.z, color.w);
 }
 
 glm::vec4 Light::getColor()
@@ -20,7 +18,6 @@ glm::vec4 Light::getColor()
 void Light::setColor(const glm::vec4& color)
 {
     this->color = color;
-    this->updateColorUniform();
 }
 
 void Light::setIntensity(float intensity)
@@ -76,10 +73,10 @@ Light::ParameterPack Light::getParameterPack()
 
 void Light::draw()
 {
-    if (shader == nullptr)
-        return;
-    //shader->use();
-    Real::Camera::getInstace().project(*shader);
+    shader.use();
+    Real::Camera::getInstace().project(shader);
+    updateUniforms();
+
     vao->draw();
 }
 }

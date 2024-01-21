@@ -19,24 +19,27 @@ private:
     void updateTexturesUniform();
     void updateTexturesUniform(int index);
 
+    void _updateUniforms() override
+    {
+        updateTexturesUniform();
+    }
+
 public:
-    Mesh(const glm::vec3& position, const std::shared_ptr<VAO> vao, const std::shared_ptr<Shader>&& shader,
+    Mesh(const glm::vec3& position, const std::shared_ptr<VAO>& vao, const std::shared_ptr<Shader> shader,
         std::vector<std::shared_ptr<Texture>> textures)
         : WorldObject(position, std::move(vao), std::move(shader)),
         textures(textures)
     {
-        this->updateTexturesUniform();
     }
 
     Mesh(const glm::vec3& position,
         const std::vector<Vertex>& vertices,
         const std::vector<GLuint>& indices,
-        const std::shared_ptr<Shader>&& shader,
+        const std::shared_ptr<Shader>& shader,
         std::vector<std::shared_ptr<Texture>> textures)
         : WorldObject(position, vertices, indices, std::move(shader)),
         textures(textures)
     {
-        this->updateTexturesUniform();
     }
 
     void draw() override;

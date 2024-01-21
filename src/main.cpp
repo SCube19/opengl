@@ -44,30 +44,13 @@ int main()
     glEnable(GL_DEPTH_TEST);
     {
 
-        std::shared_ptr<Real::Shader> shader(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::FLAT));
-        // std::unique_ptr<Real::Shader> shader2(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::FLAT));
-        // std::unique_ptr<Real::Shader> shader3(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::FLAT));
-        // std::unique_ptr<Real::Shader> shaderFlat(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::FLAT));
-        // std::unique_ptr<Real::Shader> shaderGourand(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::GOURAND));
-        // std::unique_ptr<Real::Shader> shaderPhong(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::PHONG));
+        std::shared_ptr<Real::Shader> shaderFlat(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::FLAT));
+        std::shared_ptr<Real::Shader> shaderGourand(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::GOURAND));
+        std::shared_ptr<Real::Shader> shaderPhong(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::PHONG));
+        std::shared_ptr<Real::Shader> shaderNone(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::NONE));
 
-        // std::unique_ptr<Real::Shader> shaderCube(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::PHONG));
-
-
-        // std::unique_ptr<Real::Shader> lightShader(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::NONE));
-        // std::unique_ptr<Real::Shader> lightShader2(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::NONE));
-        // std::unique_ptr<Real::Shader> lightShader3(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::NONE));
-        // std::unique_ptr<Real::Shader> lightShader4(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::NONE));
-
-        // std::unique_ptr<Real::VAO> vao = Real::VAOFactory::get(Real::VAOFactory::Shape::D8);
-        // std::unique_ptr<Real::VAO> plane = Real::VAOFactory::get(Real::VAOFactory::Shape::PLANE);
-        // std::unique_ptr<Real::VAO> plane2 = Real::VAOFactory::get(Real::VAOFactory::Shape::PLANE);
-        // std::unique_ptr<Real::VAO> planeFlat = Real::VAOFactory::get(Real::VAOFactory::Shape::PYRAMID);
-        // std::unique_ptr<Real::VAO> planeGourand = Real::VAOFactory::get(Real::VAOFactory::Shape::PYRAMID);
-        // std::unique_ptr<Real::VAO> planePhong = Real::VAOFactory::get(Real::VAOFactory::Shape::PYRAMID);
-
-        //std::unique_ptr<Real::VAO> cubeVAO = Real::VAOFactory::get(Real::VAOFactory::Shape::SMALL_CUBE);
         std::shared_ptr<Real::VAO> cubeBigVAO = Real::VAOFactory::get(Real::VAOFactory::Shape::CUBE);
+        std::shared_ptr<Real::VAO> pyramidVAO = Real::VAOFactory::get(Real::VAOFactory::Shape::PYRAMID);
 
         std::shared_ptr<Real::Texture> popcat =
             std::make_unique<Real::Texture>(std::filesystem::absolute("textures/planks.png"), Real::Texture::Type::DIFFUSE, 0);
@@ -127,16 +110,16 @@ int main()
         //     }
         // ));
 
-        // std::unique_ptr<Real::Light> lightTest(new Real::Light(
-        //     Real::Light::Type::POINT,
-        //     glm::vec3(0.0f, 0.0f, .0f),
-        //     shader,
-        //     glm::vec4(1.0f),
-        //     7.0f,
-        //     Real::Light::PointParameters{
-        //         falloff: glm::vec2(2.0f, 0.7f)
-        //     }
-        // ));
+        std::unique_ptr<Real::Light> lightTest(new Real::Light(
+            Real::Light::Type::POINT,
+            glm::vec3(0.0f, 0.0f, .0f),
+            shaderNone,
+            glm::vec4(1.0f),
+            7.0f,
+            Real::Light::PointParameters{
+                falloff: glm::vec2(2.0f, 0.7f)
+            }
+        ));
         // std::unique_ptr<Real::Light> lightTest(new Real::Light(
         //     Real::Light::Type::DIRECTIONAL,
         //     glm::vec3(0.0f, 0.0f, .0f),
@@ -147,23 +130,22 @@ int main()
         //         direction: glm::vec3(1.0f, -1.0f, 0.0f)
         //     }
         // ));
-        Real::Mesh plank(glm::vec3(0.0f, -1.0f, 0.0f), planeFlat, shaderFlat, textures);
-        Real::Mesh plank2(glm::vec3(0.0f, 1.0f, 0.0f), planeGourand, shaderGourand, textures);
-        Real::Mesh plank3(glm::vec3(-1.0f, 0.0f, 0.0f), planePhong, shaderPhong, textures);
-        Real::Mesh plank4(glm::vec3(1.0f, 0.0f, 0.0f), Shapes::CUBE.first, Shapes::CUBE.second, shaderCube, textures);
+        Real::Mesh plank(glm::vec3(0.0f, -1.0f, 0.0f), pyramidVAO, shaderFlat, textures);
+        Real::Mesh plank2(glm::vec3(0.0f, 1.0f, 0.0f), pyramidVAO, shaderGourand, textures);
+        Real::Mesh plank3(glm::vec3(-1.0f, 0.0f, 0.0f), pyramidVAO, shaderPhong, textures);
+        Real::Mesh plank4(glm::vec3(1.0f, 0.0f, 0.0f), Shapes::CUBE.first, Shapes::CUBE.second, shaderFlat, textures);
 
         plank.rotate(35.0f, glm::vec3(1.0f, 0.5f, 1.2f));
         plank2.rotate(180.0f, glm::vec3(0.0f, 0.0f, 1.0f));
         plank3.rotate(-90.0f, glm::vec3(0.0f, 0.0f, 1.0f));
 
-        //LightManager::getInstance().addLight(lightTest);
+        LightManager::getInstance().addLight(std::move(lightTest));
         // LightManager::getInstance().addLight(std::move(lightTest2));
         // LightManager::getInstance().addLight(std::move(lightTest3));
         // LightManager::getInstance().addLight(std::move(lightTest4));
-        LightManager::getInstance().applyLight(plank.getShader());
-        LightManager::getInstance().applyLight(plank2.getShader());
-        LightManager::getInstance().applyLight(plank3.getShader());
-        LightManager::getInstance().applyLight(plank4.getShader());
+        LightManager::getInstance().applyLight(*shaderFlat);
+        LightManager::getInstance().applyLight(*shaderGourand);
+        LightManager::getInstance().applyLight(*shaderPhong);
 
         double prevTime = glfwGetTime();
 

@@ -8,7 +8,7 @@ namespace Real
 {
 void WorldObject::updateModelUniform()
 {
-    shader->setUniformMatrix(
+    shader.setUniformMatrix(
         glUniformMatrix4fv,
         Uniform::MODEL,
         1, GL_FALSE, glm::value_ptr(this->model));
@@ -16,7 +16,7 @@ void WorldObject::updateModelUniform()
 
 void WorldObject::updatePositionUniform()
 {
-    shader->setUniform(
+    shader.setUniform(
         Uniform::POSITION,
         this->position.x, this->position.y, this->position.z);
 }
@@ -33,25 +33,29 @@ void WorldObject::setPosition(const glm::vec3& position)
 
 Shader& WorldObject::getShader()
 {
-    return *shader;
+    return shader;
 }
 
-void WorldObject::setShader(std::unique_ptr<Shader>&& shader)
+void WorldObject::setShader(const std::shared_ptr<Shader>& shader)
 {
-    this->shader = std::move(shader);
+    this->shader = *shader;
 }
 
 void WorldObject::rotate(float degree, const glm::vec3& direction)
 {
     this->model = glm::rotate(this->model, glm::radians(degree), direction);
-    this->updateModelUniform();
 }
 
 void WorldObject::translate(const glm::vec3& translate)
 {
     position += translate;
-    this->updatePositionUniform();
     this->model = glm::translate(this->model, translate);
-    this->updateModelUniform();
+}
+
+void WorldObject::updateUniforms()
+{
+    updateModelUniform();
+    updatePositionUniform();
+    _updateUniforms();
 }
 }

@@ -28,6 +28,8 @@ protected:
     std::shared_ptr<VAO> vao;
     Shader& shader;
 
+    virtual void _updateUniforms() = 0;
+
 public:
     using uniform = std::pair<std::string, std::any>;
 
@@ -60,11 +62,13 @@ public:
     void setPosition(const glm::vec3& position);
 
     Shader& getShader();
-    void setShader(std::unique_ptr<Shader>&& shader);
+    void setShader(const std::shared_ptr<Shader>& shader);
 
     void rotate(float degree, const glm::vec3& direction);
 
     void translate(const glm::vec3& translate);
+
+    void updateUniforms();
 
     virtual void draw() = 0;
 };
