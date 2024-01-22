@@ -33,6 +33,13 @@ std::shared_ptr<Shader> createDefault()
         std::filesystem::absolute("shaders/default.vert"),
         std::filesystem::absolute("shaders/default.frag")));
 }
+
+std::shared_ptr<Shader> createShadows()
+{
+    return std::shared_ptr<Shader>(new Shader(
+        std::filesystem::absolute("shaders/shadows.vert"),
+        std::filesystem::absolute("shaders/shadows.frag")));
+}
 }
 
 std::shared_ptr<Shader> ShaderFactory::get(ShaderFactory::LightModel model)
@@ -45,6 +52,8 @@ std::shared_ptr<Shader> ShaderFactory::get(ShaderFactory::LightModel model)
         return createGourand();
     case ShaderFactory::LightModel::PHONG:
         return createPhong();
+    case ShaderFactory::LightModel::SHADOWS:
+        return createShadows();
     default:
         return createDefault();
     }

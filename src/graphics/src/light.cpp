@@ -25,6 +25,15 @@ void Light::setIntensity(float intensity)
     this->intensity = intensity;
 }
 
+glm::vec3 Light::getPosition()
+{
+    if (const auto* parameters = std::get_if<DirectionalParameters>(&this->parameters))
+    {
+        return -100.0f * glm::normalize(parameters->direction);
+    }
+    return position;
+}
+
 void Light::translate(const glm::vec3& translate)
 {
     position += translate;

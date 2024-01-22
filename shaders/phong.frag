@@ -12,6 +12,8 @@ in vec2 texCoord;
 in vec3 Normal;
 // Imports the current position from the Vertex Shader
 in vec3 crntPos;
+// Imports the fragment position of the light
+in vec4 fragPosLight;
 
 // Gets the Texture Unit from the main function
 uniform int real_texturePresent = 1;
@@ -19,6 +21,8 @@ uniform int real_texturePresent = 1;
 uniform sampler2D real_texture0;
 
 uniform sampler2D real_specular0;
+
+uniform sampler2D shadowMap;
 
 uniform vec3 real_cameraPosition;
 
@@ -32,6 +36,23 @@ uniform vec2 real_lightFalloff[NUM_LIGHTS];
 uniform vec3 real_lightDirection[NUM_LIGHTS];
 uniform float real_lightInner[NUM_LIGHTS];
 uniform float real_lightOuter[NUM_LIGHTS];
+
+
+float shadowCalc(vec4 fragPosLightSpace)
+{
+	// perform perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5 + 0.5;
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    float closestDepth = texture(shadowMap, projCoords.xy).r; 
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+    // check whether current frag pos is in shadow
+    float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
+
+    return shadow;
+}
 
 vec4 pointLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec2 lightFalloff)
 {	
@@ -78,11 +99,13 @@ vec4 directionalLight(vec3 lightPosition, vec4 lightColor, float lightIntensity,
 	vec3 reflectionDirection = reflect(-lightDir, normal);
 	float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16);
 	float specular = specAmount * specularLight;
+	
+	float shadow = shadowCalc(fragPosLight);
 
 	vec4 tex = real_texturePresent * texture(real_texture0, texCoord) - (real_texturePresent - 1) * color;
 	vec4 specularTex = real_texturePresent * texture(real_specular0, texCoord).r - (real_texturePresent - 1) * color;
 
-	return (tex * (diffuse * lightIntensity + ambient) + specularTex * specular * lightIntensity) * lightColor;
+	return (tex * ((1.0 - shadow) * diffuse * lightIntensity + ambient) + specularTex * specular * lightIntensity * (1.0 - shadow)) * lightColor;
 }
 
 

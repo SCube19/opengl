@@ -73,9 +73,20 @@ glm::vec3 Camera::getPosition()
 {
     return position;
 }
+
 glm::vec3 Camera::getOrientation()
 {
     return orientation;
+}
+
+float Camera::getNear()
+{
+    return near;
+}
+
+float Camera::getFar()
+{
+    return far;
 }
 
 void Camera::scrollHandler(GLFWwindow* window, double xdelta, double ydelta)

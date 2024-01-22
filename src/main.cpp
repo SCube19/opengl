@@ -10,6 +10,7 @@
 #include <random>
 #include <chrono>
 #include <optional>
+#include <iostream>
 
 #include "VAO.h"
 #include "VBO.h"
@@ -27,6 +28,20 @@
 
 using namespace Real;
 
+void renderQuad();
+
+float rectangleVertices[] =
+{
+    //  Coords   // texCoords
+     1.0f, -1.0f,  1.0f, 0.0f,
+    -1.0f, -1.0f,  0.0f, 0.0f,
+    -1.0f,  1.0f,  0.0f, 1.0f,
+
+     1.0f,  1.0f,  1.0f, 1.0f,
+     1.0f, -1.0f,  1.0f, 0.0f,
+    -1.0f,  1.0f,  0.0f, 1.0f
+};
+
 int main()
 {
     // Initialize GLFW
@@ -42,12 +57,15 @@ int main()
         .setWindow(window);
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_FRAMEBUFFER_SRGB);
     {
 
         std::shared_ptr<Real::Shader> shaderFlat(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::FLAT));
         std::shared_ptr<Real::Shader> shaderGourand(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::GOURAND));
         std::shared_ptr<Real::Shader> shaderPhong(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::PHONG));
         std::shared_ptr<Real::Shader> shaderNone(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::NONE));
+        std::shared_ptr<Real::Shader> shaderShadows(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::SHADOWS));
+        std::shared_ptr<Real::Shader> shaderFramebuffer(new Shader("shaders/framebuffer.vert", "shaders/framebuffer.frag"));
 
         std::shared_ptr<Real::Texture> popcat =
             std::make_unique<Real::Texture>(std::filesystem::absolute("textures/planks.png"), Real::Texture::Type::DIFFUSE, 0);
@@ -57,63 +75,143 @@ int main()
         std::vector<std::shared_ptr<Real::Texture>> textures = { popcat, specular };
 
         std::unique_ptr<Real::Light> lightTest(new Real::Light(
-            Real::Light::Type::POINT,
+            Real::Light::Type::DIRECTIONAL,
             glm::vec3(0.0f, 0.0f, .0f),
             glm::vec4(1.0f),
-            3.0f,
-            Real::Light::PointParameters{
-                falloff: glm::vec2(2.0f, 0.7f)
+            1.0f,
+            Real::Light::DirectionalParameters{
+                direction: glm::vec3(0, -1, 0)
             }
         ));
 
-        lightTest->translate(glm::vec3(3.0f, 0, 2.0f));
-        Real::Model bunny("models/sphere.obj");
-        Real::Model bunny1("models/sphere.obj");
-        Real::Model bunny2("models/sphere.obj");
 
-        bunny.scale(0.3f);
-        bunny1.scale(0.3f);
-        bunny2.scale(0.3f);
-        bunny.translate(glm::vec3(-5.0f, .0f, .0f));
-        bunny2.translate(glm::vec3(5.0f, .0f, .0f));
+        Real::Mesh plank(glm::vec3(0, -1, 0), VAOFactory::get(VAOFactory::Shape::PLANE), textures);
 
-        LightManager::getInstance().addLight(std::move(lightTest));
+        // Real::Model bunny("models/sphere.obj");
+        // Real::Model bunny1("models/sphere.obj");
+        // Real::Model bunny2("models/sphere.obj");
+        Real::Model bunny3("models/bunny.obj");
 
+        // bunny.scale(0.2f);
+        // bunny1.scale(0.2f);
+        // bunny2.scale(0.2f);
+        bunny3.scale(3.0f);
+
+        // bunny.translate(glm::vec3(-5.0f, .0f, .0f));
+        // bunny2.translate(glm::vec3(5.0f, .0f, .0f));
 
         double prevTime = glfwGetTime();
+
+        const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+        unsigned int depthMapFBO;
+        glGenFramebuffers(1, &depthMapFBO);
+        // create depth texture
+        unsigned int depthMap;
+        glGenTextures(1, &depthMap);
+        glBindTexture(GL_TEXTURE_2D, depthMap);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        // attach depth texture as FBO's depth buffer
+        glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+        glDrawBuffer(GL_NONE);
+        glReadBuffer(GL_NONE);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        shaderFramebuffer->setUniform("depthMap", 0);
+
+        LightManager::getInstance().addLight(std::move(lightTest));
+        LightManager::getInstance().applyLight(*shaderPhong);
+
+        glm::vec3 lightPos(-2.0f, 4.0f, -1.0f);
 
         // Main while loop
         while (!glfwWindowShouldClose(&window))
         {
-            glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
+            glEnable(GL_DEPTH_TEST);
 
+            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            double currTime = glfwGetTime();
-            if (currTime - prevTime > 1 / 60)
-            {
-                bunny.rotate(1.0f, glm::vec3(1.0f, 0.5f, -1.0f));
-                bunny1.rotate(1.0f, glm::vec3(1.0f, 0.5f, -1.0f));
-                bunny2.rotate(1.0f, glm::vec3(1.0f, 0.5f, -1.0f));
-                LightManager::getInstance().translateLight(0, glm::vec3(-0.01f, 0, 0));
-            }
-            Real::LightManager::getInstance().draw();
-            LightManager::getInstance().applyLight(*shaderFlat);
-            LightManager::getInstance().applyLight(*shaderGourand);
-            LightManager::getInstance().applyLight(*shaderPhong);
-            bunny.draw(*shaderFlat);
-            bunny1.draw(*shaderGourand);
-            bunny2.draw(*shaderPhong);
 
+            glm::mat4 lightProjection, lightView;
+            glm::mat4 lightSpaceMatrix;
+            float near_plane = 1.0f, far_plane = 7.5f;
+            lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+            lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+            lightSpaceMatrix = lightProjection * lightView;
+            // render scene from light's point of view
+            shaderShadows->setUniformMatrix(glUniformMatrix4fv, "lightProjection", 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix));
+
+            glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+            glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+            glClear(GL_DEPTH_BUFFER_BIT);
+            glActiveTexture(GL_TEXTURE0);
+            popcat->bind();
+            bunny3.draw(*shaderShadows);
+            plank.draw(*shaderShadows);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+            // reset viewport
+            glViewport(0, 0, 800, 800);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            // render Depth map to quad for visual debugging
+                    // ---------------------------------------------
+            shaderFramebuffer->setUniform("near_plane", near_plane);
+            shaderFramebuffer->setUniform("far_plane", far_plane);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, depthMap);
+            renderQuad();
 
             glfwSwapBuffers(&window);
 
             glfwPollEvents();
 
             Real::Camera::getInstace().handleInput();
+            // double currTime = glfwGetTime();
+            // if (currTime - prevTime > 1 / 60)
+            // {
+            //     bunny.rotate(1.0f, glm::vec3(1.0f, 0.5f, -1.0f));
+            //     bunny1.rotate(1.0f, glm::vec3(1.0f, 0.5f, -1.0f));
+            //     bunny2.rotate(1.0f, glm::vec3(1.0f, 0.5f, -1.0f));
+            // }
         }
     }
 
     // Terminate GLFW before ending the program
     glfwTerminate();
     return 0;
+}
+
+
+unsigned int quadVAO = 0;
+unsigned int quadVBO;
+void renderQuad()
+{
+    if (quadVAO == 0)
+    {
+        float quadVertices[] = {
+            // positions        // texture Coords
+            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+             1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        };
+        // setup plane VAO
+        glGenVertexArrays(1, &quadVAO);
+        glGenBuffers(1, &quadVBO);
+        glBindVertexArray(quadVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    }
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindVertexArray(0);
 }

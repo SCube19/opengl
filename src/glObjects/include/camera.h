@@ -60,7 +60,9 @@ public:
 
     glm::vec3 getPosition();
     glm::vec3 getOrientation();
-
+    float getNear();
+    float getFar();
+    
     void project(Shader& shader);
 
     void handleInput();

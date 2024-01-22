@@ -18,11 +18,15 @@ out vec2 texCoord;
 out vec3 Normal;
 // Outputs the current position for the Fragment Shader
 out vec3 crntPos;
+// Outputs the fragment position of the light
+out vec4 fragPosLight;
 
 // Imports the camera matrix from the main function
 uniform mat4 real_camera;
 // Imports the model matrix from the main function
 uniform mat4 real_model;
+
+uniform mat4 lightProjection;
 
 void main()
 {
@@ -36,6 +40,8 @@ void main()
 	color = aColor;
 	// Assigns the texture coordinates from the Vertex Data to "texCoord"
 	texCoord = aTex;
+
+	fragPosLight = lightProjection * vec4(crntPos, 1.0f);
 	// Assigns the normal from the Vertex Data to "Normal"
 	mat3 normalMatrix = mat3(transpose(inverse((real_model))));
 	Normal = normalize(normalMatrix * aNormal);

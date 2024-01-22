@@ -68,6 +68,8 @@ public:
     glm::vec4 getColor();
     void setColor(const glm::vec4& texture);
 
+    glm::vec3 getPosition();
+
     void setIntensity(float intensity);
 
     void translate(const glm::vec3& translate) override;
