@@ -127,7 +127,7 @@ float shadowCalcPoint(vec3 lightPos, samplerCube cubeMap)
 }
 
 
-vec4 pointLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec2 lightFalloff, samplerCube cubeMap)
+vec4 pointLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec2 lightFalloff, int index)
 {	
 	vec3 lightVec = lightPosition - crntPos;
 
@@ -153,8 +153,8 @@ vec4 pointLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec2 
 	vec4 tex = real_texturePresent * texture(real_texture0, texCoord) - (real_texturePresent - 1) * color;
 	vec4 specularTex = real_texturePresent * texture(real_specular0, texCoord).r - (real_texturePresent - 1) * color;
 	
-	float shadow = shadowCalcPoint(lightPosition, cubeMap);
-
+	float shadow = shadowCalcPoint(lightPosition, real_shadowCubeMap0);
+	
 	return (tex * ((1.0 - shadow) * diffuse * inten + ambient) +  specularTex * specular * inten * (1.0 - shadow)) * lightColor;
 }
 
@@ -249,7 +249,7 @@ void main()
 					real_lightColor[i],
 					real_lightIntensity[i],
 					real_lightFalloff[i],
-					real_shadowCubeMap0
+					i
 				);
 				break;
 		}

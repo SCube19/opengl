@@ -76,29 +76,29 @@ int main()
 
         std::vector<std::shared_ptr<Real::Texture>> textures = { popcat, specular };
 
-        // std::unique_ptr<Real::Light> lightTest(new Real::Light(
-        //     Real::Light::Type::DIRECTIONAL,
-        //     glm::vec3(0.0f, 0.0f, .0f),
-        //     glm::vec4(1.0f),
-        //     1.0f,
-        //     Real::Light::DirectionalParameters{
-        //         direction: glm::vec3(0, -1, 0)
-        //     }
-        // ));
-
-        // std::unique_ptr<Real::Light> lightTest(new Real::Light(
-        //     Real::Light::Type::SPOTLIGHT,
-        //     glm::vec3(0.0f, 1.0f, .0f),
-        //     glm::vec4(1.0f),
-        //     1.0f,
-        //     Real::Light::SpotlightParameters{
-        //         direction: glm::vec3(0.0f, -1.0f, 0.0f),
-        //         inner : 0.95f,
-        //         outer : 0.90f
-        //     }
-        // ));
-
         std::unique_ptr<Real::Light> lightTest(new Real::Light(
+            Real::Light::Type::DIRECTIONAL,
+            glm::vec3(0.0f, 0.0f, .0f),
+            glm::vec4(1.0f),
+            1.0f,
+            Real::Light::DirectionalParameters{
+                direction: glm::vec3(0, -1, 0)
+            }
+        ));
+
+        std::unique_ptr<Real::Light> lightTest2(new Real::Light(
+            Real::Light::Type::SPOTLIGHT,
+            glm::vec3(0.0f, 1.0f, .0f),
+            glm::vec4(1.0f),
+            1.0f,
+            Real::Light::SpotlightParameters{
+                direction: glm::vec3(0.0f, -1.0f, 0.0f),
+                inner : 0.95f,
+                outer : 0.90f
+            }
+        ));
+
+        std::unique_ptr<Real::Light> lightTest3(new Real::Light(
             Real::Light::Type::POINT,
             glm::vec3(.0f, 1.0f, .0f),
             glm::vec4(1.0f),
@@ -107,33 +107,33 @@ int main()
                 falloff: glm::vec2(3.0f, 0.7f)
             }
         ));
-        std::unique_ptr<Real::Light> lightTest2(new Real::Light(
-            Real::Light::Type::POINT,
-            glm::vec3(-.2f, 1.0f, .0f),
-            glm::vec4(1.0f),
-            10.0f,
-            Real::Light::PointParameters{
-                falloff: glm::vec2(3.0f, 0.7f)
-            }
-        ));
+        // std::unique_ptr<Real::Light> lightTest4(new Real::Light(
+        //     Real::Light::Type::POINT,
+        //     glm::vec3(-.2f, 1.0f, .0f),
+        //     glm::vec4(1.0f),
+        //     10.0f,
+        //     Real::Light::PointParameters{
+        //         falloff: glm::vec2(3.0f, 0.7f)
+        //     }
+        // ));
         std::shared_ptr<Real::Mesh> plank(new Mesh(glm::vec3(0, -1, 0), VAOFactory::get(VAOFactory::Shape::PLANE), textures));
         std::shared_ptr<Real::Model> bunny3(new Model("models/stanford-bunny.obj"));
         std::shared_ptr<Real::Model> bunny2(new Model("models/stanford-bunny.obj"));
+        std::shared_ptr<Real::Model> sphere(new Model("models/sphere.obj"));
 
         bunny3->scale(3.0f);
         bunny2->scale(3.0f);
         bunny2->translate(glm::vec3(-.1f, -.2f, 0));
 
-
-
-
         LightManager::getInstance().addLight(std::move(lightTest));
-        // LightManager::getInstance().addLight(std::move(lightTest2));
+        LightManager::getInstance().addLight(std::move(lightTest2));
+        LightManager::getInstance().addLight(std::move(lightTest3));
         LightManager::getInstance().applyLight(*shaderPhong);
         LightManager::getInstance().applyLight(*shaderFlat);
-
+        LightManager::getInstance().applyLight(*shaderGourand);
         std::vector<std::shared_ptr<Drawable>> drawables = { bunny3, plank, bunny2 };
 
+        Shader& currentShader = *shaderGourand;
         // Main while loop
         while (!glfwWindowShouldClose(&window))
         {
@@ -142,9 +142,9 @@ int main()
             glClearColor(0.2f, 0.3f, 0.6f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            LightManager::getInstance().castShadows(*shaderFlat, window, drawables);
+            LightManager::getInstance().castShadows(currentShader, window, drawables);
             for (auto& drawable : drawables)
-                drawable->draw(*shaderFlat);
+                drawable->draw(currentShader);
 
             LightManager::getInstance().draw();
             glfwSwapBuffers(&window);
