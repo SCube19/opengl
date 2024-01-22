@@ -11,11 +11,14 @@ layout (location = 3) in vec3 aNormal;
 
 
 // Outputs the color for the Fragment Shader
-out vec4 shading[2];
+out vec4 shading[3];
 // Outputs the texture coordinates to the Fragment Shader
 out vec2 texCoord;
 
 out vec4 color;
+
+//trzeba policzyć w fragment shaderze
+out vec4 fragPosLight;
 
 // Imports the camera matrix from the main function
 uniform mat4 real_camera;
@@ -23,7 +26,6 @@ uniform mat4 real_camera;
 uniform mat4 real_model;
 
 uniform vec3 real_position;
-
 
 uniform vec3 real_cameraPosition;
 
@@ -38,8 +40,9 @@ uniform vec3 real_lightDirection[NUM_LIGHTS];
 uniform float real_lightInner[NUM_LIGHTS];
 uniform float real_lightOuter[NUM_LIGHTS];
 
+uniform mat4 lightProjection;
 
-void pointLight(inout vec4 shading[2], vec3 crntPos, vec3 Normal, vec3 lightPosition, vec4 lightColor, float lightIntensity, vec2 lightFalloff)
+void pointLight(inout vec4 shading[3], vec3 crntPos, vec3 Normal, vec3 lightPosition, vec4 lightColor, float lightIntensity, vec2 lightFalloff)
 {	
 	vec3 lightVec = lightPosition - crntPos;
 
@@ -62,11 +65,12 @@ void pointLight(inout vec4 shading[2], vec3 crntPos, vec3 Normal, vec3 lightPosi
 	float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16);
 	float specular = specAmount * specularLight;
 
-	shading[0] += (diffuse * inten + ambient) * lightColor;
-	shading[1] += (specular * inten * lightColor);
+	shading[0] += (ambient * lightColor);
+	shading[1] += (diffuse * inten * lightColor);
+	shading[2] += (specular * inten * lightColor);
 }
 
-void directionalLight(inout vec4 shading[2], vec3 crntPos, vec3 Normal, vec3 lightPosition, vec4 lightColor, float lightIntensity, vec3 lightDirection)
+void directionalLight(inout vec4 shading[3], vec3 crntPos, vec3 Normal, vec3 lightPosition, vec4 lightColor, float lightIntensity, vec3 lightDirection)
 {
     // ambient lighting
 	float ambient = 0.20f;
@@ -83,11 +87,12 @@ void directionalLight(inout vec4 shading[2], vec3 crntPos, vec3 Normal, vec3 lig
 	float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16);
 	float specular = specAmount * specularLight;
 
-	shading[0] += (diffuse * lightIntensity + ambient) * lightColor;
-	shading[1] += (specular * lightIntensity * lightColor);
+	shading[0] += (ambient * lightColor);
+	shading[1] += (diffuse * lightIntensity * lightColor);
+	shading[2] += (specular * lightIntensity * lightColor);
 }
 
-void spotlightLight(inout vec4 shading[2], vec3 crntPos, vec3 Normal, vec3 lightPosition, vec4 lightColor, float lightIntensity, vec3 lightDirection, float inner, float outer)
+void spotlightLight(inout vec4 shading[3], vec3 crntPos, vec3 Normal, vec3 lightPosition, vec4 lightColor, float lightIntensity, vec3 lightDirection, float inner, float outer)
 {
 	// ambient lighting
 	float ambient = 0.20f;
@@ -108,8 +113,9 @@ void spotlightLight(inout vec4 shading[2], vec3 crntPos, vec3 Normal, vec3 light
 	float angle = dot(-lightDirection, lightDir);
 	float inten = clamp((angle - outer) / (inner - outer), 0.0f, 1.0f);
 
-	shading[0] += (diffuse * inten + ambient) * lightColor;
-	shading[1] += (specular * inten * lightColor);
+	shading[0] += (ambient * lightColor);
+	shading[1] += (diffuse * inten * lightColor);
+	shading[2] += (specular * inten * lightColor);
 }
 
 void main()
@@ -121,7 +127,7 @@ void main()
 	gl_Position = real_camera * vec4(crntPos, 1.0);
 
 	// Assigns the colors from the Vertex Data to "color"
-	vec4 result[2] = vec4[](vec4(0.0f), vec4(0.0f));
+	vec4 result[3] = vec4[](vec4(0.0f), vec4(0.0f), vec4(0.0f));
 	// Assigns the texture coordinates from the Vertex Data to "texCoord"
 	color = aColor;
 

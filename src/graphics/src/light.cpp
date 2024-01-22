@@ -27,11 +27,12 @@ void Light::setIntensity(float intensity)
 
 glm::vec3 Light::getPosition()
 {
+    static const float bias = 0.0000001f;
     if (const auto* parameters = std::get_if<DirectionalParameters>(&this->parameters))
     {
-        return 0.0000001f + -5.0f * glm::normalize(parameters->direction);
+        return bias + -5.0f * glm::normalize(parameters->direction);
     }
-    return position;
+    return bias + position;
 }
 
 void Light::translate(const glm::vec3& translate)

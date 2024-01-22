@@ -42,7 +42,7 @@ void Shader::assertNoCompileError(GLuint shader, const std::string& type, const 
     }
 }
 
-Shader::Shader(const std::string& vertexFile, const std::string& fragmentFile)
+Shader::Shader(const std::string& vertexFile, const std::string& fragmentFile, const std::optional<std::string> geometryFile)
 {
     std::string vertexCode = getFileContents(vertexFile);
     std::string fragmentCode = getFileContents(fragmentFile);
@@ -67,11 +67,31 @@ Shader::Shader(const std::string& vertexFile, const std::string& fragmentFile)
     // Checks if Shader compiled succesfully
     assertNoCompileError(fragmentShader, "FRAGMENT", fragmentFile);
 
+    GLuint geometryShader;
+    if (geometryFile.has_value())
+    {
+        std::string geometryCode = getFileContents(*geometryFile);
+        const char* geometrySource = geometryCode.c_str();
+
+        // Create Fragment Shader Object and get its reference
+        geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+        // Attach Fragment Shader source to the Fragment Shader Object
+        glShaderSource(geometryShader, 1, &geometrySource, NULL);
+        // Compile the Vertex Shader into machine code
+        glCompileShader(geometryShader);
+        // Checks if Shader compiled succesfully
+        assertNoCompileError(geometryShader, "GEOMETRY", *geometryFile);
+    }
+
+
     // Create Shader Program Object and get its reference
     this->shaderProgram = glCreateProgram();
     // Attach the Vertex and Fragment Shaders to the Shader Program
     glAttachShader(this->shaderProgram, vertexShader);
     glAttachShader(this->shaderProgram, fragmentShader);
+
+    if (geometryFile.has_value())
+        glAttachShader(this->shaderProgram, geometryShader);
     // Wrap-up/Link all the shaders together into the Shader Program
     glLinkProgram(this->shaderProgram);
     // Checks if Shaders linked succesfully
@@ -80,6 +100,8 @@ Shader::Shader(const std::string& vertexFile, const std::string& fragmentFile)
     // Delete the now useless Vertex and Fragment Shader objects
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+    if (geometryFile.has_value())
+        glDeleteShader(geometryShader);
 }
 
 Shader::~Shader()

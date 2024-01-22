@@ -63,6 +63,7 @@ constexpr static const char* LIGHT_INNER = "real_lightInner";
 constexpr static const char* LIGHT_OUTER = "real_lightOuter";
 
 constexpr static const char* TEXTURE_PRESENT = "real_texturePresent";
+constexpr static const char* FAR = "real_far";
 
 }
 }
