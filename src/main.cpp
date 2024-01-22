@@ -118,97 +118,21 @@ int main()
         ));
         std::shared_ptr<Real::Mesh> plank(new Mesh(glm::vec3(0, -1, 0), VAOFactory::get(VAOFactory::Shape::PLANE), textures));
         std::shared_ptr<Real::Model> bunny3(new Model("models/stanford-bunny.obj"));
+        std::shared_ptr<Real::Model> bunny2(new Model("models/stanford-bunny.obj"));
 
-        // Real::Model bunny("models/sphere.obj");
-        // Real::Model bunny1("models/sphere.obj");
-        // Real::Model bunny2("models/sphere.obj");
-
-        // bunny.scale(0.2f);
-        // bunny1.scale(0.2f);
-        // bunny2.scale(0.2f);
         bunny3->scale(3.0f);
+        bunny2->scale(3.0f);
+        bunny2->translate(glm::vec3(-.1f, -.2f, 0));
 
-        // bunny.translate(glm::vec3(-5.0f, .0f, .0f));
-        // bunny2.translate(glm::vec3(5.0f, .0f, .0f));
 
-        double prevTime = glfwGetTime();
 
-        const unsigned int SHADOW_WIDTH = 4096, SHADOW_HEIGHT = 4096;
-        unsigned int depthMapFBO;
-        glGenFramebuffers(1, &depthMapFBO);
-        // create depth texture
-        unsigned int depthMap;
-        glGenTextures(1, &depthMap);
-        glBindTexture(GL_TEXTURE_2D, depthMap);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        float clamp[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, clamp);
-        // attach depth texture as FBO's depth buffer
-        glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
-        glDrawBuffer(GL_NONE);
-        glReadBuffer(GL_NONE);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-        shaderFramebuffer->setUniform("depthMap", 0);
-
-        glm::vec3 lightPos(lightTest->getPosition());
 
         LightManager::getInstance().addLight(std::move(lightTest));
-        LightManager::getInstance().addLight(std::move(lightTest2));
+        // LightManager::getInstance().addLight(std::move(lightTest2));
         LightManager::getInstance().applyLight(*shaderPhong);
-        LightManager::getInstance().applyLight(*shaderGourand);
+        LightManager::getInstance().applyLight(*shaderFlat);
 
-
-        // Framebuffer for Cubemap Shadow Map
-        unsigned int pointShadowMapFBO;
-        glGenFramebuffers(1, &pointShadowMapFBO);
-
-        // Texture for Cubemap Shadow Map FBO
-        unsigned int depthCubemap;
-        glGenTextures(1, &depthCubemap);
-
-        glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
-        for (unsigned int i = 0; i < 6; ++i)
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,
-                SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, pointShadowMapFBO);
-        glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubemap, 0);
-        glDrawBuffer(GL_NONE);
-        glReadBuffer(GL_NONE);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-        glm::mat4 pointProjection = glm::perspective(glm::radians(90.0f), 1.0f, Camera::getInstace().getNear(), Camera::getInstace().getFar());
-        glm::mat4 pointMatrices[6] = {
-            pointProjection * glm::lookAt(lightPos, lightPos + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)),
-            pointProjection * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)),
-            pointProjection * glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)),
-            pointProjection * glm::lookAt(lightPos, lightPos + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)),
-            pointProjection * glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)),
-            pointProjection * glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0))
-        };
-
-        shaderCubeMap->setUniformMatrix(glUniformMatrix4fv, "real_shadowMatrices[0]", 1, GL_FALSE, glm::value_ptr(pointMatrices[0]));
-        shaderCubeMap->setUniformMatrix(glUniformMatrix4fv, "real_shadowMatrices[1]", 1, GL_FALSE, glm::value_ptr(pointMatrices[1]));
-        shaderCubeMap->setUniformMatrix(glUniformMatrix4fv, "real_shadowMatrices[2]", 1, GL_FALSE, glm::value_ptr(pointMatrices[2]));
-        shaderCubeMap->setUniformMatrix(glUniformMatrix4fv, "real_shadowMatrices[3]", 1, GL_FALSE, glm::value_ptr(pointMatrices[3]));
-        shaderCubeMap->setUniformMatrix(glUniformMatrix4fv, "real_shadowMatrices[4]", 1, GL_FALSE, glm::value_ptr(pointMatrices[4]));
-        shaderCubeMap->setUniformMatrix(glUniformMatrix4fv, "real_shadowMatrices[5]", 1, GL_FALSE, glm::value_ptr(pointMatrices[5]));
-        shaderCubeMap->setUniform(Uniform::LIGHT_POSITION, lightPos.x, lightPos.y, lightPos.z);
-        shaderCubeMap->setUniform(Uniform::FAR, Camera::getInstace().getFar());
-
-
-        std::vector<std::shared_ptr<Drawable>> drawables = { bunny3, plank };
+        std::vector<std::shared_ptr<Drawable>> drawables = { bunny3, plank, bunny2 };
 
         // Main while loop
         while (!glfwWindowShouldClose(&window))
@@ -218,43 +142,9 @@ int main()
             glClearColor(0.2f, 0.3f, 0.6f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            // glm::mat4 lightProjection, lightView;
-            // glm::mat4 lightSpaceMatrix;
-            // //lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, Camera::getInstace().getNear(), Camera::getInstace().getFar());
-            // lightProjection = glm::perspective(glm::radians(90.0f), 1.0f, Camera::getInstace().getNear(), Camera::getInstace().getFar());
-            // lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            // lightSpaceMatrix = lightProjection * lightView;
-            // // render scene from light's point of view
-            // //shaderShadows->setUniformMatrix(glUniformMatrix4fv, "lightProjection", 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix));
-
-            // glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-
-            // //IMPORTANT
-            // glBindFramebuffer(GL_FRAMEBUFFER, pointShadowMapFBO);
-            // glClear(GL_DEPTH_BUFFER_BIT);
-            // glCullFace(GL_FRONT);
-            // bunny3->draw(*shaderCubeMap);
-            // plank->draw(*shaderCubeMap);
-            // glCullFace(GL_BACK);
-            // glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            // // reset viewport
-            // glViewport(0, 0, 800, 800);
-            // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-            // shaderPhong->setUniformMatrix(glUniformMatrix4fv, "lightProjection", 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix));
-            // glActiveTexture(GL_TEXTURE0 + 2);
-            // glBindTexture(GL_TEXTURE_2D, depthMap);
-            // shaderPhong->setUniform("shadowMap", 2);
-            // Code for Point Lights
-
-            //shaderPhong->setUniformMatrix(glUniformMatrix4fv, "lightProjection", 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix));
-            // glActiveTexture(GL_TEXTURE0 + 3);
-            // glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
-            // shaderPhong->setUniform("real_shadowCubeMap0", 3);
-            // shaderPhong->setUniform(Uniform::FAR, Camera::getInstace().getFar());
-            LightManager::getInstance().castShadows(*shaderPhong, window, drawables);
+            LightManager::getInstance().castShadows(*shaderFlat, window, drawables);
             for (auto& drawable : drawables)
-                drawable->draw(*shaderPhong);
+                drawable->draw(*shaderFlat);
 
             LightManager::getInstance().draw();
             glfwSwapBuffers(&window);
