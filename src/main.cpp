@@ -10,6 +10,8 @@
 #include <random>
 #include <chrono>
 #include <optional>
+#include <iostream>
+#include <ranges>
 
 #include "VAO.h"
 #include "VBO.h"
@@ -27,6 +29,20 @@
 
 using namespace Real;
 
+void renderQuad();
+
+float rectangleVertices[] =
+{
+    //  Coords   // texCoords
+     1.0f, -1.0f,  1.0f, 0.0f,
+    -1.0f, -1.0f,  0.0f, 0.0f,
+    -1.0f,  1.0f,  0.0f, 1.0f,
+
+     1.0f,  1.0f,  1.0f, 1.0f,
+     1.0f, -1.0f,  1.0f, 0.0f,
+    -1.0f,  1.0f,  0.0f, 1.0f
+};
+
 int main()
 {
     // Initialize GLFW
@@ -42,15 +58,16 @@ int main()
         .setWindow(window);
 
     glEnable(GL_DEPTH_TEST);
+    //glEnable(GL_FRAMEBUFFER_SRGB);
     {
 
         std::shared_ptr<Real::Shader> shaderFlat(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::FLAT));
         std::shared_ptr<Real::Shader> shaderGourand(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::GOURAND));
         std::shared_ptr<Real::Shader> shaderPhong(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::PHONG));
         std::shared_ptr<Real::Shader> shaderNone(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::NONE));
-
-        std::shared_ptr<Real::VAO> cubeBigVAO = Real::VAOFactory::get(Real::VAOFactory::Shape::CUBE);
-        std::shared_ptr<Real::VAO> pyramidVAO = Real::VAOFactory::get(Real::VAOFactory::Shape::PYRAMID);
+        std::shared_ptr<Real::Shader> shaderShadows(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::SHADOWS));
+        std::shared_ptr<Real::Shader> shaderCubeMap(Real::ShaderFactory::get(Real::ShaderFactory::LightModel::CUBE_MAP));
+        std::shared_ptr<Real::Shader> shaderFramebuffer(new Shader("shaders/framebuffer.vert", "shaders/framebuffer.frag", std::nullopt));
 
         std::shared_ptr<Real::Texture> popcat =
             std::make_unique<Real::Texture>(std::filesystem::absolute("textures/planks.png"), Real::Texture::Type::DIFFUSE, 0);
@@ -59,127 +76,77 @@ int main()
 
         std::vector<std::shared_ptr<Real::Texture>> textures = { popcat, specular };
 
-        ////////////////////
-        // std::unique_ptr<Real::Light> lightTest(new Real::Light(
-        //     Real::Light::Type::SPOTLIGHT,
-        //     glm::vec3(0.0f, 0.0f, .0f),
-        //     std::move(lightShader),
-        //     glm::vec4(1.0f),
-        //     2.0f,
-        //     Real::Light::SpotlightParameters{
-        //         direction: glm::vec3(0.0f, -1.0f, 0.0f),
-        //         inner : 0.7f,
-        //         outer : 0.6f,
-        //     }
-        // ));
-        // std::unique_ptr<Real::Light> lightTest2(new Real::Light(
-        //     Real::Light::Type::SPOTLIGHT,
-        //     glm::vec3(0.0f, 0.0f, .0f),
-        //     std::move(lightShader2),
-        //     glm::vec4(1.0f),
-        //     2.0f,
-        //     Real::Light::SpotlightParameters{
-        //         direction: glm::vec3(0.0f, 1.0f, 0.0f),
-        //         inner : 0.99f,
-        //         outer : 0.97f,
-        //     }
-        // ));
-        // std::unique_ptr<Real::Light> lightTest3(new Real::Light(
-        //     Real::Light::Type::SPOTLIGHT,
-        //     glm::vec3(0.0f, 0.0f, .0f),
-        //     std::move(lightShader3),
-        //     glm::vec4(1.0f),
-        //     2.0f,
-        //     Real::Light::SpotlightParameters{
-        //         direction: glm::vec3(-1.0f, 0.0f, 0.0f),
-        //         inner : 0.99f,
-        //         outer : 0.97f,
-        //     }
-        // ));
-
-        // std::unique_ptr<Real::Light> lightTest4(new Real::Light(
-        //     Real::Light::Type::SPOTLIGHT,
-        //     glm::vec3(0.0f, 0.0f, .0f),
-        //     std::move(lightShader4),
-        //     glm::vec4(1.0f),
-        //     2.0f,
-        //     Real::Light::SpotlightParameters{
-        //         direction: glm::vec3(1.0f, 0.0f, 0.0f),
-        //         inner : 0.99f,
-        //         outer : 0.97f,
-        //     }
-        // ));
-
-        // std::unique_ptr<Real::Light> lightTest(new Real::Light(
-        //     Real::Light::Type::POINT,
-        //     glm::vec3(0.0f, 0.0f, 0.5f),
-        //     glm::vec4(1.0f),
-        //     2.0f,
-        //     Real::Light::PointParameters{
-        //         falloff: glm::vec2(2.0f, 0.7f)
-        //     }
-        // ));
         std::unique_ptr<Real::Light> lightTest(new Real::Light(
             Real::Light::Type::DIRECTIONAL,
             glm::vec3(0.0f, 0.0f, .0f),
             glm::vec4(1.0f),
             1.0f,
             Real::Light::DirectionalParameters{
-                direction: glm::vec3(1.0f, -1.0f, 0.0f)
+                direction: glm::vec3(0, -1, 0)
             }
         ));
-        // Real::Mesh plank(glm::vec3(0.0f, -1.0f, 0.0f), pyramidVAO, textures);
-        // Real::Mesh plank2(glm::vec3(0.0f, 1.0f, 0.0f), pyramidVAO, textures);
-        // Real::Mesh plank3(glm::vec3(-1.0f, 0.0f, 0.0f), pyramidVAO, textures);
-        //Real::Mesh plank4(glm::vec3(1.0f, 0.0f, 0.0f), Shapes::CUBE.first, Shapes::CUBE.second, {});
 
-        // plank.rotate(35.0f, glm::vec3(1.0f, 0.5f, 1.2f));
-        // plank2.rotate(180.0f, glm::vec3(0.0f, 0.0f, 1.0f));
-        // plank3.rotate(-90.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+        std::unique_ptr<Real::Light> lightTest2(new Real::Light(
+            Real::Light::Type::SPOTLIGHT,
+            glm::vec3(0.0f, 1.0f, .0f),
+            glm::vec4(1.0f),
+            1.0f,
+            Real::Light::SpotlightParameters{
+                direction: glm::vec3(0.0f, -1.0f, 0.0f),
+                inner : 0.95f,
+                outer : 0.90f
+            }
+        ));
 
-        Real::Model bunny("models/sphere.obj");
-        Real::Model bunny1("models/sphere.obj");
-        Real::Model bunny2("models/sphere.obj");
+        std::unique_ptr<Real::Light> lightTest3(new Real::Light(
+            Real::Light::Type::POINT,
+            glm::vec3(.0f, 1.0f, .0f),
+            glm::vec4(1.0f),
+            10.0f,
+            Real::Light::PointParameters{
+                falloff: glm::vec2(3.0f, 0.7f)
+            }
+        ));
+        // std::unique_ptr<Real::Light> lightTest4(new Real::Light(
+        //     Real::Light::Type::POINT,
+        //     glm::vec3(-.2f, 1.0f, .0f),
+        //     glm::vec4(1.0f),
+        //     10.0f,
+        //     Real::Light::PointParameters{
+        //         falloff: glm::vec2(3.0f, 0.7f)
+        //     }
+        // ));
+        std::shared_ptr<Real::Mesh> plank(new Mesh(glm::vec3(0, -1, 0), VAOFactory::get(VAOFactory::Shape::PLANE), textures));
+        std::shared_ptr<Real::Model> bunny3(new Model("models/stanford-bunny.obj"));
+        std::shared_ptr<Real::Model> bunny2(new Model("models/stanford-bunny.obj"));
+        std::shared_ptr<Real::Model> sphere(new Model("models/sphere.obj"));
 
-        bunny.scale(0.3f);
-        bunny1.scale(0.3f);
-        bunny2.scale(0.3f);
-        bunny.translate(glm::vec3(-5.0f, .0f, .0f));
-        bunny2.translate(glm::vec3(5.0f, .0f, .0f));
+        bunny3->scale(3.0f);
+        bunny2->scale(3.0f);
+        bunny2->translate(glm::vec3(-.1f, -.2f, 0));
 
         LightManager::getInstance().addLight(std::move(lightTest));
-        // LightManager::getInstance().addLight(std::move(lightTest2));
-        // LightManager::getInstance().addLight(std::move(lightTest3));
-        // LightManager::getInstance().addLight(std::move(lightTest4));
+        LightManager::getInstance().addLight(std::move(lightTest2));
+        LightManager::getInstance().addLight(std::move(lightTest3));
+        LightManager::getInstance().applyLight(*shaderPhong);
         LightManager::getInstance().applyLight(*shaderFlat);
         LightManager::getInstance().applyLight(*shaderGourand);
-        LightManager::getInstance().applyLight(*shaderPhong);
+        std::vector<std::shared_ptr<Drawable>> drawables = { bunny3, plank, bunny2 };
 
-        double prevTime = glfwGetTime();
-
+        Shader& currentShader = *shaderGourand;
         // Main while loop
         while (!glfwWindowShouldClose(&window))
         {
-            glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
+            glEnable(GL_DEPTH_TEST);
 
+            glClearColor(0.2f, 0.3f, 0.6f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            double currTime = glfwGetTime();
-            if (currTime - prevTime > 1 / 60)
-            {
-                bunny.rotate(1.0f, glm::vec3(1.0f, 0.5f, -1.0f));
-                bunny1.rotate(1.0f, glm::vec3(1.0f, 0.5f, -1.0f));
-                bunny2.rotate(1.0f, glm::vec3(1.0f, 0.5f, -1.0f));
-            }
-            // plank.draw(*shaderFlat);
-            // plank2.draw(*shaderGourand);
-            // plank3.draw(*shaderPhong);
-            //plank4.draw(*shaderPhong);
-            bunny.draw(*shaderFlat);
-            bunny1.draw(*shaderGourand);
-            bunny2.draw(*shaderPhong);
 
-            Real::LightManager::getInstance().draw();
+            LightManager::getInstance().castShadows(currentShader, window, drawables);
+            for (auto& drawable : drawables)
+                drawable->draw(currentShader);
 
+            LightManager::getInstance().draw();
             glfwSwapBuffers(&window);
 
             glfwPollEvents();
@@ -191,4 +158,34 @@ int main()
     // Terminate GLFW before ending the program
     glfwTerminate();
     return 0;
+}
+
+
+unsigned int quadVAO = 0;
+unsigned int quadVBO;
+void renderQuad()
+{
+    if (quadVAO == 0)
+    {
+        float quadVertices[] = {
+            // positions        // texture Coords
+            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+             1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        };
+        // setup plane VAO
+        glGenVertexArrays(1, &quadVAO);
+        glGenBuffers(1, &quadVBO);
+        glBindVertexArray(quadVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    }
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindVertexArray(0);
 }

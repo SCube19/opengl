@@ -25,10 +25,37 @@ void Light::setIntensity(float intensity)
     this->intensity = intensity;
 }
 
+glm::vec3 Light::getPosition()
+{
+    static const float bias = 0.0000001f;
+    if (const auto* parameters = std::get_if<DirectionalParameters>(&this->parameters))
+    {
+        return bias + -5.0f * glm::normalize(parameters->direction);
+    }
+    return bias + position;
+}
+
+Light::Type Light::getType()
+{
+    return type;
+}
+
 void Light::translate(const glm::vec3& translate)
 {
     position += translate;
     WorldObject::translate(translate);
+}
+
+void Light::rotate(float degree, const glm::vec3& direction)
+{
+    if (auto* val = std::get_if<DirectionalParameters>(&this->parameters))
+    {
+        val->direction = glm::rotate(val->direction, degree, direction);
+    }
+    else if (auto* val = std::get_if<SpotlightParameters>(&this->parameters))
+    {
+        val->direction = glm::rotate(val->direction, degree, direction);
+    }
 }
 
 Light::ParameterPack Light::getParameterPack()

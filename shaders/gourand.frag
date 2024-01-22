@@ -3,7 +3,6 @@
 // Outputs colors in RGBA
 out vec4 FragColor;
 
-
 // Imports the color from the Vertex Shader
 in vec4 shading[2];
 // Imports the texture coordinates from the Vertex Shader
@@ -24,4 +23,3 @@ void main()
 	vec4 specularTex = real_texturePresent * texture(real_specular0, texCoord).r - (real_texturePresent - 1) * color;
 	FragColor = clamp(tex * shading[0] + specularTex * shading[1], 0.0f, 1.0f);
 }
-

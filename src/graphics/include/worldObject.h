@@ -20,7 +20,6 @@ class WorldObject : public Drawable
 {
 private:
     void updateModelUniform(Shader& shader);
-    void updatePositionUniform(Shader& shader);
 
 protected:
     glm::mat4 model;

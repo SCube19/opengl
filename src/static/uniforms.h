@@ -53,6 +53,24 @@ constexpr static const char* SPECULAR[20] = {
         "real_specular18",
         "real_specular19",
 };
+
+constexpr static const char* SHADOW_CUBES[15] = {
+        "real_shadowCubeMap0",
+        "real_shadowCubeMap1",
+        "real_shadowCubeMap2",
+        "real_shadowCubeMap3",
+        "real_shadowCubeMap4",
+        "real_shadowCubeMap5",
+        "real_shadowCubeMap6",
+        "real_shadowCubeMap7",
+        "real_shadowCubeMap8",
+        "real_shadowCubeMap9",
+        "real_shadowCubeMap10",
+        "real_shadowCubeMap11",
+        "real_shadowCubeMap12",
+        "real_shadowCubeMap13",
+        "real_shadowCubeMap14"
+};
 constexpr static const char* LIGHT_TYPE = "real_lightType";
 constexpr static const char* LIGHT_POSITION = "real_lightPosition";
 constexpr static const char* LIGHT_COLOR = "real_lightColor";
@@ -63,6 +81,12 @@ constexpr static const char* LIGHT_INNER = "real_lightInner";
 constexpr static const char* LIGHT_OUTER = "real_lightOuter";
 
 constexpr static const char* TEXTURE_PRESENT = "real_texturePresent";
+constexpr static const char* FAR = "real_far";
+constexpr static const char* LIGHT_PROJECTION = "real_lightProjection";
+constexpr static const char* LAST_LIGHT = "real_lastLight";
+constexpr static const char* SHADOW_MAP = "real_shadowMap";
+constexpr static const char* SHADOW_MATRICES = "real_shadowMatrices";
+constexpr static const char* RENDER_LIGHT = "real_renderLight";
 
 }
 }

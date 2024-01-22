@@ -18,13 +18,16 @@ out vec2 texCoord;
 flat out vec3 Normal;
 // Outputs the current position for the Fragment Shader
 flat out vec3 crntPos;
+// Outputs the fragment position of the light
+#define NUM_LIGHTS 15
+flat out vec4 fragPosLight[NUM_LIGHTS];
 
 // Imports the camera matrix from the main function
 uniform mat4 real_camera;
 // Imports the model matrix from the main function
 uniform mat4 real_model;
 
-uniform vec3 real_position;
+uniform mat4 real_lightProjection[NUM_LIGHTS];
 
 void main()
 {
@@ -32,12 +35,19 @@ void main()
 	// calculates current position
 	crntPos = vec3(real_model * vec4(aPos, 1.0f));
 	// Outputs the positions/coordinates of all vertices
-	gl_Position = real_camera * vec4(crntPos, 1.0f);
+	gl_Position = real_camera * vec4(crntPos, 1.0);
 
 	// Assigns the colors from the Vertex Data to "color"
 	color = aColor;
 	// Assigns the texture coordinates from the Vertex Data to "texCoord"
 	texCoord = aTex;
+
+	vec4 fragmentPositons[NUM_LIGHTS];
+	for (int i = 0; i < NUM_LIGHTS; i++)
+	{
+		fragmentPositons[i] = real_lightProjection[i] * vec4(crntPos, 1.0f);
+	}
+	fragPosLight = fragmentPositons;
 	// Assigns the normal from the Vertex Data to "Normal"
 	mat3 normalMatrix = mat3(transpose(inverse((real_model))));
 	Normal = normalize(normalMatrix * aNormal);

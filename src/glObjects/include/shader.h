@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <string>
 #include <functional>
+#include <optional>
 
 namespace Real
 {
@@ -19,7 +20,7 @@ private:
     }
 
 public:
-    Shader(const std::string& vertexFile, const std::string& fragmentFile);
+    Shader(const std::string& vertexFile, const std::string& fragmentFile, const std::optional<std::string> geometryFile);
     ~Shader();
 
     void use();

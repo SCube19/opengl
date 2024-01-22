@@ -15,6 +15,8 @@ public:
         FLAT,
         GOURAND,
         PHONG,
+        SHADOWS,
+        CUBE_MAP,
         NONE
     };
     static std::shared_ptr<Shader> get(LightModel model);
