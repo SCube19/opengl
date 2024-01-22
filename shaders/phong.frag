@@ -13,25 +13,27 @@ in vec3 Normal;
 // Imports the current position from the Vertex Shader
 in vec3 crntPos;
 // Imports the fragment position of the light
-in vec4 fragPosLight;
+#define NUM_LIGHTS 15
+in vec4 fragPosLight[NUM_LIGHTS];
 
 // Gets the Texture Unit from the main function
+uniform int real_lastLight;
+
 uniform int real_texturePresent = 1;
 
 uniform sampler2D real_texture0;
 
 uniform sampler2D real_specular0;
 
-uniform sampler2D shadowMap;
+uniform sampler2D real_shadowMap[NUM_LIGHTS];
 
-uniform samplerCube shadowCubeMap;
+uniform samplerCube real_shadowCubeMap[NUM_LIGHTS];
 
 uniform float real_far;
 
 uniform vec3 real_cameraPosition;
 
 // light parameters
-#define NUM_LIGHTS 20
 uniform vec3 real_lightPosition[NUM_LIGHTS];
 uniform vec4 real_lightColor[NUM_LIGHTS];
 uniform uint real_lightType[NUM_LIGHTS];
@@ -51,7 +53,7 @@ vec3 sampleOffsetDirections[20] = vec3[]
    vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
 );   
 
-float shadowCalc(vec4 fragPosLightSpace, vec3 lightDir, vec3 normal, float biasValue)
+float shadowCalc(vec4 fragPosLightSpace, vec3 lightDir, vec3 normal, float biasValue, sampler2D shadowMap)
 {
 
 	// perform perspective divide
@@ -82,7 +84,7 @@ float shadowCalc(vec4 fragPosLightSpace, vec3 lightDir, vec3 normal, float biasV
     return shadow;
 }
 
-float shadowCalcPoint(vec3 lightPos) 
+float shadowCalcPoint(vec3 lightPos, samplerCube shadowCubeMap) 
 {
 	// get vector between fragment position and light position
     vec3 fragToLight = crntPos - lightPos;
@@ -111,7 +113,7 @@ float shadowCalcPoint(vec3 lightPos)
 }
 
 
-vec4 pointLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec2 lightFalloff)
+vec4 pointLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec2 lightFalloff, samplerCube shadowCubeMap)
 {	
 	vec3 lightVec = lightPosition - crntPos;
 
@@ -137,12 +139,12 @@ vec4 pointLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec2 
 	vec4 tex = real_texturePresent * texture(real_texture0, texCoord) - (real_texturePresent - 1) * color;
 	vec4 specularTex = real_texturePresent * texture(real_specular0, texCoord).r - (real_texturePresent - 1) * color;
 	
-	float shadow = shadowCalcPoint(lightPosition);
-
+	// float shadow = shadowCalcPoint(lightPosition, shadowCubeMap);
+	float shadow = 0.0;
 	return (tex * ((1.0 - shadow) * diffuse * inten + ambient) +  specularTex * specular * inten * (1.0 - shadow)) * lightColor;
 }
 
-vec4 directionalLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec3 lightDirection)
+vec4 directionalLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec3 lightDirection, vec4 fragPosLight, sampler2D shadowMap)
 {
     // ambient lighting
 	float ambient = 0.20f;
@@ -159,7 +161,7 @@ vec4 directionalLight(vec3 lightPosition, vec4 lightColor, float lightIntensity,
 	float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16);
 	float specular = specAmount * specularLight;
 	
-	float shadow = shadowCalc(fragPosLight, lightDir, normal, 0.05);
+	float shadow = shadowCalc(fragPosLight, lightDir, normal, 0.05, shadowMap);
 
 	vec4 tex = real_texturePresent * texture(real_texture0, texCoord) - (real_texturePresent - 1) * color;
 	vec4 specularTex = real_texturePresent * texture(real_specular0, texCoord).r - (real_texturePresent - 1) * color;
@@ -168,7 +170,7 @@ vec4 directionalLight(vec3 lightPosition, vec4 lightColor, float lightIntensity,
 }
 
 
-vec4 spotlightLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec3 lightDirection, float inner, float outer)
+vec4 spotlightLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec3 lightDirection, float inner, float outer, vec4 fragPosLight, sampler2D shadowMap)
 {
 	// ambient lighting
 	float ambient = 0.20f;
@@ -189,7 +191,7 @@ vec4 spotlightLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, v
 	float angle = dot(-lightDirection, lightDir);
 	float inten = clamp((angle - outer) / (inner - outer), 0.0f, 1.0f);
 	
-	float shadow = shadowCalc(fragPosLight, lightDir, normal, 0.005f);
+	float shadow = shadowCalc(fragPosLight, lightDir, normal, 0.005f, shadowMap);
 
 	vec4 tex = real_texturePresent * texture(real_texture0, texCoord) - (real_texturePresent - 1) * color;
 	vec4 specularTex = real_texturePresent * texture(real_specular0, texCoord).r - (real_texturePresent - 1) * color;
@@ -202,7 +204,7 @@ void main()
 	// outputs final color
 	vec4 result = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	for (int i = 0; i < NUM_LIGHTS; i++)
+	for (int i = 0; i < real_lastLight; i++)
 	{
 		switch(real_lightType[i])
 		{
@@ -211,7 +213,9 @@ void main()
 					real_lightPosition[i],
 					real_lightColor[i],
 					real_lightIntensity[i],
-					real_lightDirection[i]);
+					real_lightDirection[i],
+					fragPosLight[i],
+					real_shadowMap[i]);
 				break;
 			case 1:
 				result += spotlightLight(
@@ -220,7 +224,9 @@ void main()
 					real_lightIntensity[i],
 					real_lightDirection[i],
 					real_lightInner[i],
-					real_lightOuter[i]
+					real_lightOuter[i],
+					fragPosLight[i],
+					real_shadowMap[i]
 				);
 				break;
 			case 2:
@@ -228,7 +234,8 @@ void main()
 					real_lightPosition[i],
 					real_lightColor[i],
 					real_lightIntensity[i],
-					real_lightFalloff[i]
+					real_lightFalloff[i],
+					real_shadowCubeMap[i]
 				);
 				break;
 		}

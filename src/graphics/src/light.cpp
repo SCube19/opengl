@@ -35,6 +35,11 @@ glm::vec3 Light::getPosition()
     return bias + position;
 }
 
+Light::Type Light::getType()
+{
+    return type;
+}
+
 void Light::translate(const glm::vec3& translate)
 {
     position += translate;

@@ -64,6 +64,11 @@ constexpr static const char* LIGHT_OUTER = "real_lightOuter";
 
 constexpr static const char* TEXTURE_PRESENT = "real_texturePresent";
 constexpr static const char* FAR = "real_far";
+constexpr static const char* LIGHT_PROJECTION = "real_lightProjection";
+constexpr static const char* LAST_LIGHT = "real_lastLight";
+constexpr static const char* SHADOW_MAP = "real_shadowMap";
+constexpr static const char* SHADOW_CUBE = "real_shadowCubeMap";
+constexpr static const char* SHADOW_MATRICES = "real_shadowMatrices";
 
 }
 }

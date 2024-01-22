@@ -2,7 +2,7 @@
 layout (triangles) in;
 layout (triangle_strip, max_vertices=18) out;
 
-uniform mat4 shadowMatrices[6];
+uniform mat4 real_shadowMatrices[6];
 
 out vec4 FragPos;
 
@@ -16,7 +16,7 @@ void main()
         {
             // Make transformed vertex
             FragPos = gl_in[i].gl_Position;
-            gl_Position = shadowMatrices[face] * FragPos;
+            gl_Position = real_shadowMatrices[face] * FragPos;
             EmitVertex();
         }
         EndPrimitive();

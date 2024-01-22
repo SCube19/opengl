@@ -70,6 +70,8 @@ public:
 
     glm::vec3 getPosition();
 
+    Type getType();
+
     void setIntensity(float intensity);
 
     void translate(const glm::vec3& translate) override;
