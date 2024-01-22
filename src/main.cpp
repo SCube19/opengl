@@ -90,7 +90,7 @@ int main()
         // Real::Model bunny("models/sphere.obj");
         // Real::Model bunny1("models/sphere.obj");
         // Real::Model bunny2("models/sphere.obj");
-        Real::Model bunny3("models/bunny.obj");
+        Real::Model bunny3("models/stanford-bunny.obj");
 
         // bunny.scale(0.2f);
         // bunny1.scale(0.2f);
@@ -102,7 +102,7 @@ int main()
 
         double prevTime = glfwGetTime();
 
-        const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+        const unsigned int SHADOW_WIDTH = 4096, SHADOW_HEIGHT = 4096;
         unsigned int depthMapFBO;
         glGenFramebuffers(1, &depthMapFBO);
         // create depth texture
@@ -114,6 +114,8 @@ int main()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        float clamp[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, clamp);
         // attach depth texture as FBO's depth buffer
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
@@ -123,10 +125,10 @@ int main()
 
         shaderFramebuffer->setUniform("depthMap", 0);
 
+        glm::vec3 lightPos(lightTest->getPosition());
+
         LightManager::getInstance().addLight(std::move(lightTest));
         LightManager::getInstance().applyLight(*shaderPhong);
-
-        glm::vec3 lightPos(-2.0f, 4.0f, -1.0f);
 
         // Main while loop
         while (!glfwWindowShouldClose(&window))
@@ -138,9 +140,8 @@ int main()
 
             glm::mat4 lightProjection, lightView;
             glm::mat4 lightSpaceMatrix;
-            float near_plane = 1.0f, far_plane = 7.5f;
-            lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
-            lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+            lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, Camera::getInstace().getNear(), Camera::getInstace().getFar());
+            lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             lightSpaceMatrix = lightProjection * lightView;
             // render scene from light's point of view
             shaderShadows->setUniformMatrix(glUniformMatrix4fv, "lightProjection", 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix));
@@ -148,23 +149,30 @@ int main()
             glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
             glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
             glClear(GL_DEPTH_BUFFER_BIT);
-            glActiveTexture(GL_TEXTURE0);
-            popcat->bind();
+            glCullFace(GL_FRONT);
             bunny3.draw(*shaderShadows);
             plank.draw(*shaderShadows);
+            glCullFace(GL_BACK);
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
             // reset viewport
             glViewport(0, 0, 800, 800);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            // render Depth map to quad for visual debugging
-                    // ---------------------------------------------
-            shaderFramebuffer->setUniform("near_plane", near_plane);
-            shaderFramebuffer->setUniform("far_plane", far_plane);
-            glActiveTexture(GL_TEXTURE0);
+            shaderPhong->setUniformMatrix(glUniformMatrix4fv, "lightProjection", 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix));
+            glActiveTexture(GL_TEXTURE0 + 2);
             glBindTexture(GL_TEXTURE_2D, depthMap);
-            renderQuad();
+            shaderPhong->setUniform("shadowMap", 2);
+
+            bunny3.draw(*shaderPhong);
+            plank.draw(*shaderPhong);
+            // // render Depth map to quad for visual debugging
+            //         // ---------------------------------------------
+            // shaderFramebuffer->setUniform("near_plane", near_plane);
+            // shaderFramebuffer->setUniform("far_plane", far_plane);
+            // glActiveTexture(GL_TEXTURE0);
+            // glBindTexture(GL_TEXTURE_2D, depthMap);
+            // renderQuad();
 
             glfwSwapBuffers(&window);
 

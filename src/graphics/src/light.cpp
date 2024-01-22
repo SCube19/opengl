@@ -29,7 +29,7 @@ glm::vec3 Light::getPosition()
 {
     if (const auto* parameters = std::get_if<DirectionalParameters>(&this->parameters))
     {
-        return -100.0f * glm::normalize(parameters->direction);
+        return 0.0000001f + -5.0f * glm::normalize(parameters->direction);
     }
     return position;
 }
