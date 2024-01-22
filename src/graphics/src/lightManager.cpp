@@ -3,11 +3,12 @@
 #include "uniforms.h"
 #include "shaderFactory.h"
 #include <sstream>
+#include <ranges>
 namespace Real
 {
 namespace
 {
-constexpr unsigned int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
+constexpr unsigned int SHADOW_WIDTH = 4096, SHADOW_HEIGHT = 4096;
 }
 
 LightManager::LightManager()
@@ -33,9 +34,8 @@ LightManager::LightManager()
         glReadBuffer(GL_NONE);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        // Framebuffer for Cubemap Shadow Map
-        glGenFramebuffers(1, &depthCubemapFBO);
 
+        glGenFramebuffers(1, &depthCubemapFBO);
         // Texture for Cubemap Shadow Map FBO
         glGenTextures(1, &depthCubemap);
 
@@ -112,8 +112,6 @@ void LightManager::applyLight(Shader& shader)
 
     }
 
-    shader.setUniform(Uniform::LAST_LIGHT, static_cast<int>(lights.size()));
-
     shader.setUniformVector<GLuint>(glUniform1uiv, Uniform::LIGHT_TYPE, MAX_LIGHTS, parameters.type);
     shader.setUniformVector<GLfloat>(glUniform4fv, Uniform::LIGHT_COLOR, 4 * MAX_LIGHTS, parameters.color);
     shader.setUniformVector<GLfloat>(glUniform3fv, Uniform::LIGHT_POSITION, 3 * MAX_LIGHTS, parameters.position);
@@ -125,9 +123,8 @@ void LightManager::applyLight(Shader& shader)
 
 }
 
-void LightManager::castShadows(Shader& shader, Window& window, const std::vector<std::shared_ptr<Drawable>>& models)
+void LightManager::castShadows(Shader& shader, Window& window, const std::vector<std::shared_ptr<Drawable>>& drawables)
 {
-    shader.setUniform(Uniform::LAST_LIGHT, static_cast<int>(lights.size()));
     static constexpr glm::vec3 pointCubelookAts[] = {
         glm::vec3(1.0, 0.0, 0.0),
         glm::vec3(-1.0, 0.0, 0.0),
@@ -155,14 +152,13 @@ void LightManager::castShadows(Shader& shader, Window& window, const std::vector
         if (lights[i]->getType() == Light::Type::POINT)
         {
             glm::mat4 pointMatrices[6] = {
-                pointProjection * glm::lookAt(lightPos, lightPos + pointCubelookAts[0],  pointCubeUps[0]),
-                pointProjection * glm::lookAt(lightPos, lightPos + pointCubelookAts[1],  pointCubeUps[1]),
-                pointProjection * glm::lookAt(lightPos, lightPos + pointCubelookAts[2],  pointCubeUps[2]),
-                pointProjection * glm::lookAt(lightPos, lightPos + pointCubelookAts[3],  pointCubeUps[3]),
-                pointProjection * glm::lookAt(lightPos, lightPos + pointCubelookAts[4],  pointCubeUps[4]),
-                pointProjection * glm::lookAt(lightPos, lightPos + pointCubelookAts[5],  pointCubeUps[5])
+                pointProjection * glm::lookAt(lightPos, lightPos + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)),
+                pointProjection * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)),
+                pointProjection * glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)),
+                pointProjection * glm::lookAt(lightPos, lightPos + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)),
+                pointProjection * glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)),
+                pointProjection * glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0))
             };
-
             shadowCubeShader->setUniformMatrix(glUniformMatrix4fv, "real_shadowMatrices[0]", 1, GL_FALSE, glm::value_ptr(pointMatrices[0]));
             shadowCubeShader->setUniformMatrix(glUniformMatrix4fv, "real_shadowMatrices[1]", 1, GL_FALSE, glm::value_ptr(pointMatrices[1]));
             shadowCubeShader->setUniformMatrix(glUniformMatrix4fv, "real_shadowMatrices[2]", 1, GL_FALSE, glm::value_ptr(pointMatrices[2]));
@@ -178,17 +174,20 @@ void LightManager::castShadows(Shader& shader, Window& window, const std::vector
             glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             glm::mat4 lightSpaceMatrix = parallelProjection * lightView;
             shadowShader->setUniformMatrix(glUniformMatrix4fv, Uniform::LIGHT_PROJECTION, 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix));
+
             std::ostringstream ss;
-            ss << Uniform::LIGHT_PROJECTION << "[" << std::to_string(i) << "]";
+            ss << Uniform::LIGHT_PROJECTION << "[" << i << "]";
             shader.setUniformMatrix(glUniformMatrix4fv, ss.str(), 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix));
+
+            glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO[i]);
         }
 
         Shader& shading = lights[i]->getType() == Light::Type::POINT ? *shadowCubeShader : *shadowShader;
-
+        glBindFramebuffer(GL_FRAMEBUFFER, depthCubemapFBO[i]);
         glClear(GL_DEPTH_BUFFER_BIT);
         glCullFace(GL_FRONT);
-        for (auto& model : models)
-            model->draw(shading);
+        for (auto& drawable : drawables)
+            drawable->draw(shading);
         glCullFace(GL_BACK);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
@@ -203,9 +202,7 @@ void LightManager::castShadows(Shader& shader, Window& window, const std::vector
             int slot = 2 * MAX_LIGHTS + i;
             glActiveTexture(GL_TEXTURE0 + slot);
             glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap[i]);
-            std::ostringstream ss;
-            ss << Uniform::SHADOW_CUBE << "[" << std::to_string(i) << "]";
-            shader.setUniform(ss.str(), slot);
+            shader.setUniform("real_shadowCubeMap0", slot);
         }
         else
         {
@@ -213,7 +210,7 @@ void LightManager::castShadows(Shader& shader, Window& window, const std::vector
             glActiveTexture(GL_TEXTURE0 + slot);
             glBindTexture(GL_TEXTURE_2D, depthMap[i]);
             std::ostringstream ss;
-            ss << Uniform::SHADOW_MAP << "[" << std::to_string(i) << "]";
+            ss << Uniform::SHADOW_MAP << "[" << i << "]";
             shader.setUniform(ss.str(), slot);
         }
     }

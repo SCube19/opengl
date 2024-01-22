@@ -27,7 +27,21 @@ uniform sampler2D real_specular0;
 
 uniform sampler2D real_shadowMap[NUM_LIGHTS];
 
-uniform samplerCube real_shadowCubeMap[NUM_LIGHTS];
+uniform samplerCube real_shadowCubeMap0;
+uniform samplerCube real_shadowCubeMap1;
+uniform samplerCube real_shadowCubeMap2;
+uniform samplerCube real_shadowCubeMap3;
+uniform samplerCube real_shadowCubeMap4;
+uniform samplerCube real_shadowCubeMap5;
+uniform samplerCube real_shadowCubeMap6;
+uniform samplerCube real_shadowCubeMap7;
+uniform samplerCube real_shadowCubeMap8;
+uniform samplerCube real_shadowCubeMap9;
+uniform samplerCube real_shadowCubeMap10;
+uniform samplerCube real_shadowCubeMap11;
+uniform samplerCube real_shadowCubeMap12;
+uniform samplerCube real_shadowCubeMap13;
+uniform samplerCube real_shadowCubeMap14;
 
 uniform float real_far;
 
@@ -42,7 +56,6 @@ uniform vec2 real_lightFalloff[NUM_LIGHTS];
 uniform vec3 real_lightDirection[NUM_LIGHTS];
 uniform float real_lightInner[NUM_LIGHTS];
 uniform float real_lightOuter[NUM_LIGHTS];
-
 
 vec3 sampleOffsetDirections[20] = vec3[]
 (
@@ -84,12 +97,12 @@ float shadowCalc(vec4 fragPosLightSpace, vec3 lightDir, vec3 normal, float biasV
     return shadow;
 }
 
-float shadowCalcPoint(vec3 lightPos, samplerCube shadowCubeMap) 
+float shadowCalcPoint(vec3 lightPos, samplerCube cubeMap) 
 {
 	// get vector between fragment position and light position
     vec3 fragToLight = crntPos - lightPos;
     // use the light to fragment vector to sample from the depth map    
-    float closestDepth = texture(shadowCubeMap, fragToLight).r;
+    float closestDepth = texture(cubeMap, fragToLight).r;
     // it is currently in linear range between [0,1]. Re-transform back to original value
     closestDepth *= real_far;
     // now get current linear depth as the length between the fragment and light position
@@ -102,7 +115,7 @@ float shadowCalcPoint(vec3 lightPos, samplerCube shadowCubeMap)
 	float diskRadius = (1.0 + (viewDistance / real_far)) / 25.0;
 	for(int i = 0; i < samples; ++i)
 	{
-		float closestDepth = texture(shadowCubeMap, fragToLight + sampleOffsetDirections[i] * diskRadius).r;
+		float closestDepth = texture(cubeMap, fragToLight + sampleOffsetDirections[i] * diskRadius).r;
 		closestDepth *= real_far;   // undo mapping [0;1]
 		if(currentDepth - bias > closestDepth)
 			shadow += 1.0;
@@ -110,10 +123,11 @@ float shadowCalcPoint(vec3 lightPos, samplerCube shadowCubeMap)
 	shadow /= float(samples);  
 
     return shadow;
+
 }
 
 
-vec4 pointLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec2 lightFalloff, samplerCube shadowCubeMap)
+vec4 pointLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec2 lightFalloff, samplerCube cubeMap)
 {	
 	vec3 lightVec = lightPosition - crntPos;
 
@@ -139,8 +153,8 @@ vec4 pointLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec2 
 	vec4 tex = real_texturePresent * texture(real_texture0, texCoord) - (real_texturePresent - 1) * color;
 	vec4 specularTex = real_texturePresent * texture(real_specular0, texCoord).r - (real_texturePresent - 1) * color;
 	
-	// float shadow = shadowCalcPoint(lightPosition, shadowCubeMap);
-	float shadow = 0.0;
+	float shadow = shadowCalcPoint(lightPosition, cubeMap);
+
 	return (tex * ((1.0 - shadow) * diffuse * inten + ambient) +  specularTex * specular * inten * (1.0 - shadow)) * lightColor;
 }
 
@@ -204,7 +218,7 @@ void main()
 	// outputs final color
 	vec4 result = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	for (int i = 0; i < real_lastLight; i++)
+	for (int i = 0; i < NUM_LIGHTS; i++)
 	{
 		switch(real_lightType[i])
 		{
@@ -235,10 +249,10 @@ void main()
 					real_lightColor[i],
 					real_lightIntensity[i],
 					real_lightFalloff[i],
-					real_shadowCubeMap[i]
+					real_shadowCubeMap0
 				);
 				break;
 		}
 	}
-	FragColor = clamp(result, 0.0f, 1.0f);
+	FragColor = result;
 }
