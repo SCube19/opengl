@@ -1,2 +1,5 @@
-# opengl
-Computer Graphics Assignment Project (Will do more info when i know what i'm doing)
+# Real Engine
+
+Plz help me :c 
+
+![opengl](https://github.com/SCube19/real-engine/assets/58513895/59aedaed-63a9-429f-a5bd-d0481bd67ab3)
