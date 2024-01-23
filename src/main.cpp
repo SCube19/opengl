@@ -84,9 +84,6 @@ int main()
         std::shared_ptr<Real::Texture> ratTex =
             std::make_unique<Real::Texture>(std::filesystem::absolute("models/rat/mat0_c.jpg"), Real::Texture::Type::DIFFUSE);
 
-        std::shared_ptr<Real::Texture> bricksTex =
-            std::make_unique<Real::Texture>(std::filesystem::absolute("textures/bricks.jpg"), Real::Texture::Type::DIFFUSE);
-
         std::vector<std::shared_ptr<Real::Texture>> textures = { terrainTex, specular };
 
         std::shared_ptr<Real::Light> directional(new Real::Light(
@@ -234,7 +231,7 @@ int main()
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             double currTime = glfwGetTime();
-            if (currTime - prevTime > 1 / 60)
+            if (currTime - prevTime > 1 / 40)
             {
                 prevTime = currTime;
                 pointLight->translate(0.01f * pointDirection);
