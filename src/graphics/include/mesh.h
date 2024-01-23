@@ -41,5 +41,13 @@ public:
     }
 
     void draw(Shader& shader) override;
+
+    void setDiffuse(const std::shared_ptr<Texture>& tex)
+    {
+        if (textures.empty())
+            textures.push_back(tex);
+        else
+            textures[0] = tex;
+    }
 };
 }

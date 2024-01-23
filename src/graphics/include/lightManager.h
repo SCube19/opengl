@@ -14,7 +14,7 @@ class LightManager
 private:
     LightManager();
 
-    std::vector<std::unique_ptr<Light>> lights;
+    std::vector<std::shared_ptr<Light>> lights;
 
     struct ShaderLightParameters
     {
@@ -42,7 +42,7 @@ public:
 
     void castShadows(Shader& shader, Window& window, const std::vector<std::shared_ptr<Drawable>>& models);
 
-    void addLight(std::unique_ptr<Light>&& light);
+    void addLight(const std::shared_ptr<Light>& light);
 
     void removeLight(int index);
 

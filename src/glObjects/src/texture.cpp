@@ -2,13 +2,13 @@
 
 namespace Real
 {
-Texture::Texture(const std::string& image, Texture::Type texType, GLuint slot)
+Texture::Texture(const std::string& image, Texture::Type texType)
 {
     path = image;
     stbi_set_flip_vertically_on_load(true);
 
     type = texType;
-    this->slot = slot;
+    this->slot = static_cast<GLuint>(type == Texture::Type::SPECULAR);
 
     int w, h, ch;
     unsigned char* bytes = stbi_load(image.c_str(), &w, &h, &ch, 0);

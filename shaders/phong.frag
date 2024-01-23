@@ -97,12 +97,12 @@ float shadowCalc(vec4 fragPosLightSpace, vec3 lightDir, vec3 normal, float biasV
     return shadow;
 }
 
-float shadowCalcPoint(vec3 lightPos, samplerCube cubeMap) 
+float shadowCalcPoint(vec3 lightPos) 
 {
 	// get vector between fragment position and light position
     vec3 fragToLight = crntPos - lightPos;
     // use the light to fragment vector to sample from the depth map    
-    float closestDepth = texture(cubeMap, fragToLight).r;
+    float closestDepth = texture(real_shadowCubeMap0, fragToLight).r;
     // it is currently in linear range between [0,1]. Re-transform back to original value
     closestDepth *= real_far;
     // now get current linear depth as the length between the fragment and light position
@@ -115,7 +115,7 @@ float shadowCalcPoint(vec3 lightPos, samplerCube cubeMap)
 	float diskRadius = (1.0 + (viewDistance / real_far)) / 25.0;
 	for(int i = 0; i < samples; ++i)
 	{
-		float closestDepth = texture(cubeMap, fragToLight + sampleOffsetDirections[i] * diskRadius).r;
+		float closestDepth = texture(real_shadowCubeMap0, fragToLight + sampleOffsetDirections[i] * diskRadius).r;
 		closestDepth *= real_far;   // undo mapping [0;1]
 		if(currentDepth - bias > closestDepth)
 			shadow += 1.0;
@@ -136,7 +136,7 @@ vec4 pointLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec2 
 	float inten = lightIntensity / (lightFalloff.x * dist * dist + lightFalloff.y * dist + 1.0f);
 
 	// ambient lighting
-	float ambient = 0.20f;
+	float ambient = 0.1f;
 
 	// diffuse lighting
 	vec3 normal = normalize(Normal);
@@ -153,7 +153,7 @@ vec4 pointLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec2 
 	vec4 tex = real_texturePresent * texture(real_texture0, texCoord) - (real_texturePresent - 1) * color;
 	vec4 specularTex = real_texturePresent * texture(real_specular0, texCoord).r - (real_texturePresent - 1) * color;
 	
-	float shadow = shadowCalcPoint(lightPosition, real_shadowCubeMap0);
+	float shadow = shadowCalcPoint(lightPosition);
 	
 	return (tex * ((1.0 - shadow) * diffuse * inten + ambient) +  specularTex * specular * inten * (1.0 - shadow)) * lightColor;
 }
@@ -161,7 +161,7 @@ vec4 pointLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec2 
 vec4 directionalLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec3 lightDirection, vec4 fragPosLight, sampler2D shadowMap)
 {
     // ambient lighting
-	float ambient = 0.20f;
+	float ambient = 0.1f;
 
 	// diffuse lighting
 	vec3 normal = normalize(Normal);
@@ -187,7 +187,7 @@ vec4 directionalLight(vec3 lightPosition, vec4 lightColor, float lightIntensity,
 vec4 spotlightLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec3 lightDirection, float inner, float outer, vec4 fragPosLight, sampler2D shadowMap)
 {
 	// ambient lighting
-	float ambient = 0.20f;
+	float ambient = 0.1f;
 
 	// diffuse lighting
 	vec3 normal = normalize(Normal);
@@ -203,7 +203,7 @@ vec4 spotlightLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, v
 	
 	// calculates the intensity of the crntPos based on its angle to the center of the light cone
 	float angle = dot(-lightDirection, lightDir);
-	float inten = clamp((angle - outer) / (inner - outer), 0.0f, 1.0f);
+	float inten = clamp(lightIntensity * ((angle - outer) / (inner - outer)), 0.0f, 1.0f);
 	
 	float shadow = shadowCalc(fragPosLight, lightDir, normal, 0.005f, shadowMap);
 
@@ -249,7 +249,7 @@ void main()
 					real_lightColor[i],
 					real_lightIntensity[i],
 					real_lightFalloff[i],
-					i
+					0
 				);
 				break;
 		}

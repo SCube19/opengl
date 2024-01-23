@@ -1,6 +1,7 @@
 #include "model.h"
 #include <stdexcept>
 #include <sstream>
+#include <iostream>
 
 namespace Real
 {
@@ -73,10 +74,10 @@ std::unique_ptr<Mesh> Model::processMesh(aiMesh* mesh, const aiScene* scene)
     {
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
         std::vector<std::shared_ptr<Texture>> diffuseMaps = loadMaterialTextures(material,
-            aiTextureType_DIFFUSE, Texture::Type::DIFFUSE, 0);
+            aiTextureType_DIFFUSE, Texture::Type::DIFFUSE);
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
         std::vector<std::shared_ptr<Texture>> specularMaps = loadMaterialTextures(material,
-            aiTextureType_SPECULAR, Texture::Type::DIFFUSE, diffuseMaps.size());
+            aiTextureType_SPECULAR, Texture::Type::SPECULAR);
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
 
@@ -84,7 +85,7 @@ std::unique_ptr<Mesh> Model::processMesh(aiMesh* mesh, const aiScene* scene)
 }
 
 std::vector<std::shared_ptr<Texture>> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type,
-    Texture::Type typeName, int offset)
+    Texture::Type typeName)
 {
     std::vector<std::shared_ptr<Texture>> textures;
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
@@ -94,11 +95,12 @@ std::vector<std::shared_ptr<Texture>> Model::loadMaterialTextures(aiMaterial* ma
         std::string path = str.C_Str();
         if (!loadedTextures.contains(path))
         {
-            std::shared_ptr<Texture> texture(new Texture(std::string(path), typeName, i + offset));
-            loadedTextures[path] = texture;
+            std::shared_ptr<Texture> texture(new Texture(std::string(path), typeName));
+            loadedTextures.insert({ path, texture });
         }
         textures.push_back(loadedTextures[path]);
     }
+    assert(textures.size() == mat->GetTextureCount(type));
     return textures;
 }
 
