@@ -8,7 +8,7 @@ namespace Real
 {
 namespace
 {
-constexpr unsigned int SHADOW_WIDTH = 4096, SHADOW_HEIGHT = 4096;
+constexpr unsigned int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
 }
 
 LightManager::LightManager()
@@ -66,6 +66,7 @@ LightManager::LightManager()
     shadowShader = ShaderFactory::get(ShaderFactory::LightModel::SHADOWS);
     shadowCubeShader = ShaderFactory::get(ShaderFactory::LightModel::CUBE_MAP);
     shadowCubeShader->setUniform(Uniform::FAR, Camera::getInstace().getFar());
+
 }
 
 LightManager& LightManager::getInstance()
@@ -125,6 +126,17 @@ void LightManager::applyLight(Shader& shader)
 
 void LightManager::castShadows(Shader& shader, Window& window, const std::vector<std::shared_ptr<Drawable>>& drawables)
 {
+    static bool firstCast = true;
+    if (firstCast)
+    {
+        // :DDDD
+        int slot = 2 * MAX_LIGHTS;
+        glActiveTexture(GL_TEXTURE0 + slot);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap[0]);
+        shader.setUniform("real_shadowCubeMap0", slot);
+        firstCast = false;
+    }
+
     static constexpr glm::vec3 pointCubelookAts[] = {
         glm::vec3(1.0, 0.0, 0.0),
         glm::vec3(-1.0, 0.0, 0.0),
@@ -183,7 +195,7 @@ void LightManager::castShadows(Shader& shader, Window& window, const std::vector
         }
 
         Shader& shading = lights[i]->getType() == Light::Type::POINT ? *shadowCubeShader : *shadowShader;
-        glBindFramebuffer(GL_FRAMEBUFFER, depthCubemapFBO[i]);
+
         glClear(GL_DEPTH_BUFFER_BIT);
         glCullFace(GL_FRONT);
         for (auto& drawable : drawables)

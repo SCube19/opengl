@@ -126,14 +126,14 @@ int main()
         bunny2->translate(glm::vec3(-.1f, -.2f, 0));
 
         LightManager::getInstance().addLight(std::move(lightTest));
-        LightManager::getInstance().addLight(std::move(lightTest2));
-        LightManager::getInstance().addLight(std::move(lightTest3));
+        //LightManager::getInstance().addLight(std::move(lightTest2));
+        //LightManager::getInstance().addLight(std::move(lightTest3));
         LightManager::getInstance().applyLight(*shaderPhong);
         LightManager::getInstance().applyLight(*shaderFlat);
         LightManager::getInstance().applyLight(*shaderGourand);
         std::vector<std::shared_ptr<Drawable>> drawables = { bunny3, plank, bunny2 };
 
-        Shader& currentShader = *shaderGourand;
+        Shader& currentShader = *shaderPhong;
         // Main while loop
         while (!glfwWindowShouldClose(&window))
         {
