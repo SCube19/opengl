@@ -75,10 +75,10 @@ LightManager& LightManager::getInstance()
     return instance;
 }
 
-void LightManager::addLight(std::unique_ptr<Light>&& light)
+void LightManager::addLight(const std::shared_ptr<Light>& light)
 {
     if (lights.size() < MAX_LIGHTS)
-        lights.push_back(std::move(light));
+        lights.push_back(light);
 
 }
 
@@ -126,16 +126,11 @@ void LightManager::applyLight(Shader& shader)
 
 void LightManager::castShadows(Shader& shader, Window& window, const std::vector<std::shared_ptr<Drawable>>& drawables)
 {
-    static bool firstCast = true;
-    if (firstCast)
-    {
-        // :DDDD
-        int slot = 2 * MAX_LIGHTS;
-        glActiveTexture(GL_TEXTURE0 + slot);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap[0]);
-        shader.setUniform("real_shadowCubeMap0", slot);
-        firstCast = false;
-    }
+    // :DDDD
+    int slot = 2 * MAX_LIGHTS;
+    glActiveTexture(GL_TEXTURE0 + slot);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap[0]);
+    shader.setUniform("real_shadowCubeMap0", slot);
 
     static constexpr glm::vec3 pointCubelookAts[] = {
         glm::vec3(1.0, 0.0, 0.0),

@@ -27,7 +27,7 @@ private:
     std::string path;
 
 public:
-    Texture(const std::string& image, Type texType, GLuint slot);
+    Texture(const std::string& image, Type texType);
 
     ~Texture();
 

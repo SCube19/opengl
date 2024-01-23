@@ -32,7 +32,7 @@ private:
     void processNode(aiNode* node, const aiScene* scene);
     std::unique_ptr<Mesh> processMesh(aiMesh* mesh, const aiScene* scene);
     std::vector<std::shared_ptr<Texture>> loadMaterialTextures(aiMaterial* mat, aiTextureType type,
-        Texture::Type typeName, int offset);
+        Texture::Type typeName);
 
 public:
     Model(const std::string& path)
@@ -43,6 +43,12 @@ public:
     void draw(Shader& shader) override;
 
     void draw(Shader& shader, Mesh& additional);
+
+    void setDiffuse(const std::shared_ptr<Texture>& tex)
+    {
+        for (auto& mesh : meshes)
+            mesh->setDiffuse(tex);
+    }
 
     void updateUniforms(Shader& shader)
     {

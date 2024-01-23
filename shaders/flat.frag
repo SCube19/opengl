@@ -136,7 +136,7 @@ vec4 pointLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec2 
 	float inten = lightIntensity / (lightFalloff.x * dist * dist + lightFalloff.y * dist + 1.0f);
 
 	// ambient lighting
-	float ambient = 0.20f;
+	float ambient = 0.1f;
 
 	// diffuse lighting
 	vec3 normal = normalize(Normal);
@@ -161,7 +161,7 @@ vec4 pointLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec2 
 vec4 directionalLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec3 lightDirection, vec4 fragPosLight, sampler2D shadowMap)
 {
     // ambient lighting
-	float ambient = 0.20f;
+	float ambient = 0.1f;
 
 	// diffuse lighting
 	vec3 normal = normalize(Normal);
@@ -187,7 +187,7 @@ vec4 directionalLight(vec3 lightPosition, vec4 lightColor, float lightIntensity,
 vec4 spotlightLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, vec3 lightDirection, float inner, float outer, vec4 fragPosLight, sampler2D shadowMap)
 {
 	// ambient lighting
-	float ambient = 0.20f;
+	float ambient = 0.1f;
 
 	// diffuse lighting
 	vec3 normal = normalize(Normal);
@@ -203,7 +203,7 @@ vec4 spotlightLight(vec3 lightPosition, vec4 lightColor, float lightIntensity, v
 	
 	// calculates the intensity of the crntPos based on its angle to the center of the light cone
 	float angle = dot(-lightDirection, lightDir);
-	float inten = clamp((angle - outer) / (inner - outer), 0.0f, 1.0f);
+	float inten = clamp(lightIntensity * ((angle - outer) / (inner - outer)), 0.0f, 1.0f);
 	
 	float shadow = shadowCalc(fragPosLight, lightDir, normal, 0.005f, shadowMap);
 
